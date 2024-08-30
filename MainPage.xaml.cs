@@ -1,22 +1,27 @@
 ﻿
 
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Windows.Input;
 
 namespace SafariBooksDownload
 {
     public partial class MainPage : ContentPage
     {
         public ObservableCollection<Book> Books { get; set; }
+        public ICommand DownloadBookCommand { get;  }
         int count = 0;
 
         public MainPage()
         {
             InitializeComponent();
             Books = new ObservableCollection<Book>();
+            
             BindingContext = this;
+            
         }
 
         private void OnCounterClicked(object sender, EventArgs e)
@@ -38,6 +43,13 @@ namespace SafariBooksDownload
 
             var searchTerm = bookName.Text;
              await getJsonAsync(searchTerm);
+
+        }
+
+        private async void downloadBook(object sender, EventArgs e)
+        {
+            Book selectedBook = (Book) ((Button)sender).BindingContext;
+            await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id +  "book selected" + "book selected" , " ok");
 
         }
 
@@ -110,6 +122,7 @@ namespace SafariBooksDownload
 
             return "";
         }
+
     }
 
 }

@@ -14,5 +14,7 @@ namespace SafariBooksDownload
         public string authors { get; set; }
         public string description { get; set; }
         public string url { get; set; }
+
+    
     }
 }
