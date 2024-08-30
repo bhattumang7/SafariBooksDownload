@@ -4,6 +4,8 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
 using Microsoft.Maui.Layouts;
+using SkiaSharp;
+using Syncfusion.Maui.Core.Carousel;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -63,9 +65,19 @@ namespace SafariBooksDownload
         {
             // Handle button click here
             //await DisplayAlert("Alert", "Clicked", "ok");
-
-            var searchTerm = bookName.Text;
-             await getJsonAsync(searchTerm);
+            try
+            {
+                ViewModel.searchInProgress = true;
+                var searchTerm = bookName.Text;
+                await getJsonAsync(searchTerm);
+                ViewModel.searchInProgress = false;
+            }
+            catch(Exception ex)
+            {
+                ViewModel.searchInProgress = false;
+                await DisplayAlert("Error occured", ex.Message + "\r\n" + ex.StackTrace, " ok");
+            }
+            
 
         }
 
@@ -142,6 +154,8 @@ namespace SafariBooksDownload
                 }
                 // Rename zip file to .epub
                 File.Move(zipPath, epubPath);
+
+                await DisplayAlert("Epug generated", epubPath , " ok");
 
                 // now lets download the files into oebpsPath folder
                 //await downloadPages(oebpsPath, selectedBook);
@@ -300,7 +314,7 @@ namespace SafariBooksDownload
 
                     await File.WriteAllBytesAsync(localPath, fileBytes);
 
-                    if (file.media_type == "text/html")
+                    if (file.media_type == "text/css")
                     {
                         string content = File.ReadAllText(localPath);
                         content.Replace("display: none", "visibility: hidden");
@@ -308,6 +322,7 @@ namespace SafariBooksDownload
                         File.WriteAllText(localPath, content);
                     }
 
+                    
                     if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
                     {
                         PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
@@ -383,6 +398,16 @@ namespace SafariBooksDownload
             return "";
         }
 
+        private byte[] OptimizeImage(byte[] imageBytes)
+        {
+            using var inputStream = new MemoryStream(imageBytes);
+            using var original = SKBitmap.Decode(inputStream);
+            using var resizedImage = original.Resize(new SKImageInfo(original.Width / 2, original.Height / 2), SKFilterQuality.High);
+            using var image = SKImage.FromBitmap(resizedImage);
+            using var outputStream = new MemoryStream();
+            image.Encode(SKEncodedImageFormat.Jpeg, 75).SaveTo(outputStream);
+            return outputStream.ToArray();
+        }
         private async Task<String> parepareListOFFiles(Book selectedBook)
         {
             string requestURL = selectedBook.files_URL;
@@ -396,7 +421,7 @@ namespace SafariBooksDownload
 
             var jsonDocument = JsonDocument.Parse(stringResponse);
             int totalFilesCount = jsonDocument.RootElement.GetProperty("count").GetInt32();
-
+            ViewModel.DownloadProgress.ProgressLabel = "Getting list of files that needs to be dowloaded for " + selectedBook.title;
             MainThread.BeginInvokeOnMainThread(() =>
             {
 

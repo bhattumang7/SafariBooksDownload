@@ -4,11 +4,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace SafariBooksDownload
 {
     internal class Config
     {
+        static Config(){
+            if(DeviceInfo.Current.Platform == DevicePlatform.Android)
+            {
+                var downloadsPath = FileSystem.Current.AppDataDirectory;
+                var epubPath = Path.Combine(downloadsPath, "epub");
+
+                // Create the "epub" directory if it doesn't exist
+                if (!Directory.Exists(epubPath))
+                {
+                    Directory.CreateDirectory(epubPath);
+                }
+            }
+            else if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+            {
+                BooksPath = @"C:\Umang\NewDownloader\";
+            }
+            else
+            {
+                BooksPath = @"C:\Umang\NewDownloader\";
+            }
+            
+        }
         private static string pATH = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         public static string COOKIES_FILE = Path.Combine(PATH, "cookies.json");
         public static string ORLY_BASE_HOST = "oreilly.com";  // Insert URL here
@@ -23,6 +46,6 @@ namespace SafariBooksDownload
 
         public static string PATH { get => pATH; set => pATH = value; }
 
-        public static string BooksPath = @"C:\Umang\NewDownloader\";
+        public static string BooksPath ;
     }
 }

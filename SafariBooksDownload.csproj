@@ -1,8 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+
 	<PropertyGroup>
+    
+    <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+    
 		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+    
+    
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
 
@@ -64,5 +70,10 @@
 		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="26.2.11" />
 		<PackageReference Include="Telerik.UI.for.Maui.Trial" Version="7.1.0" />
 	</ItemGroup>
-
+  <Target Name="_RemoveLinuxFrameworkReferences" AfterTargets="ProcessFrameworkReferences">
+    <ItemGroup>
+      <_ProblematicRIDs Include="linux-bionic-arm;linux-bionic-x86" />
+      <PackageDownload Remove="Microsoft.NETCore.App.Runtime.%(_ProblematicRIDs.Identity)" />
+    </ItemGroup>
+  </Target>
 </Project>
