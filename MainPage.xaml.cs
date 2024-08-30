@@ -167,7 +167,7 @@ namespace SafariBooksDownload
 
                 await File.WriteAllBytesAsync(localPath, fileBytes);
                 
-                if(file.media_type == "text/html")
+                if(file.media_type == "text/html" || file.media_type== "application/xhtml+xml")
                 {
                     PathAdjuster pathAdjuster = new PathAdjuster(productId);
                     String extraCSSInfo = "";
