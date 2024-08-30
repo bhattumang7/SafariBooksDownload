@@ -72,8 +72,9 @@ namespace SafariBooksDownload
 
         private async Task<List<JsonNodeInfo>> getFlatTableOFContent(Book selectedBook)
         {
-            List < JsonNodeInfo > tableOfCOntent = new List<JsonNodeInfo>();
-            string requestURL = selectedBook.flat_toc;
+            
+            List <JsonNodeInfo> tableOfCOntent = new List<JsonNodeInfo>();
+            string requestURL = selectedBook.toc;
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
             var response = await customHttpClientHandler.GetAsync(requestURL);
 
@@ -82,22 +83,20 @@ namespace SafariBooksDownload
             var stringResponse = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
 
             var jsonDocument = JsonDocument.Parse(stringResponse);
-            foreach (var tocItem in jsonDocument.RootElement.EnumerateArray())
+
+            var options = new JsonSerializerOptions
             {
-                tableOfCOntent.Add(new JsonNodeInfo()
-                {
-                    depth = tocItem.GetProperty("depth").GetInt32(),
-                    url = tocItem.GetProperty("url").GetString(),
-                    fragment = tocItem.GetProperty("fragment").GetString(),
-                    filename = tocItem.GetProperty("filename").GetString(),
-                    order = tocItem.GetProperty("order").GetInt32(),
-                    label  = tocItem.GetProperty("label").GetString(),
-                    full_path = tocItem.GetProperty("full_path").GetString(),
-                    href = tocItem.GetProperty("href").GetString(),
-                    media_type = tocItem.GetProperty("media_type").GetString()
-                });
-            }
-            return tableOfCOntent;
+                PropertyNameCaseInsensitive = true,
+                WriteIndented = true,
+            };
+
+            List<JsonNodeInfo> chapters = JsonSerializer.Deserialize<List<JsonNodeInfo>>(stringResponse, options);
+
+            JsonNodeProcessor jsonNodeProcessor = new JsonNodeProcessor();
+            jsonNodeProcessor.AssignOrder(chapters);
+            int maxDepth = jsonNodeProcessor.getMaxDepth();
+
+            return chapters;
         }
 
         private async Task<string> downloadPages(String oebpsPath, Book selectedBook)

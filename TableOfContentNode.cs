@@ -18,5 +18,7 @@ namespace SafariBooksDownload
         public String full_path { get; set; }
         public String href { get; set; }
         public String media_type { get; set; }
+
+        public List<JsonNodeInfo> children { get; set; }
     }
 }
