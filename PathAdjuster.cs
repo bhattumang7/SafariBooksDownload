@@ -14,7 +14,7 @@ namespace SafariBooksDownload
         public PathAdjuster(string productId)
         {
             _baseUrl = "/api/v2/epubs/urn:orm:book:" + productId + "/files/";
-            _localBasePath = "";
+            _localBasePath = "/";
         }
 
         public string AdjustPathsInHtml(string htmlContent)

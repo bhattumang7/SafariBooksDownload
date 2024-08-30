@@ -19,6 +19,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 
 namespace SafariBooksDownload
@@ -110,13 +111,23 @@ namespace SafariBooksDownload
                     if (file.full_path.EndsWith(".opf"))
                     {
                         opfPath = file.full_path;
+                        break;
                     }
                 }
 
+
                         
-                        var s = await DownloadFileAsync(selectedBook, chapters,  localEpubFolder );
+                var s = await DownloadFileAsync(selectedBook, chapters,  localEpubFolder );
                   
                 var containeXMLPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
+
+                // put additional file 
+                //var sourceCssFilePath = Path.Combine(FileSystem.AppDataDirectory, "Resources", "Raw", );
+                var targetOverrideCSSFilePath = Path.Join(localEpubFolder, "override_v1.css");
+                var sourceFileContent = await ReadTextFileAsync("override_v1.css");
+                File.WriteAllText(targetOverrideCSSFilePath, sourceFileContent);
+
+                await AddOverrideCSSToManifest(Path.Join (localEpubFolder,  opfPath));
 
                 // create meta-inf folder.
                 string directoryPath = Path.GetDirectoryName(containeXMLPath);
@@ -167,6 +178,49 @@ namespace SafariBooksDownload
                 progressLabel.IsVisible = false;
                 booksListView.IsVisible = true;
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace , " ok");
+            }
+        }
+
+        public async Task<string> ReadTextFileAsync(string fileName)
+        {
+            try
+            {
+                using Stream fileStream = await FileSystem.Current.OpenAppPackageFileAsync(fileName);
+                using StreamReader reader = new StreamReader(fileStream);
+                return await reader.ReadToEndAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions as needed
+                return $"Error reading file: {ex.Message}";
+            }
+        }
+
+        public async Task AddOverrideCSSToManifest(string filePath)
+        {
+
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException(filePath);
+            }
+
+            // Load the XML document
+            XDocument xmlDoc = XDocument.Load(filePath);
+
+            // Create a new item element
+            XElement newItem = new XElement("item",
+                new XAttribute("id", "newItemId"),
+                new XAttribute("href", "OEBPS/Text/newitem.html"),
+                new XAttribute("media-type", "application/xhtml+xml")
+            );
+
+            // Add the new item to the manifest
+            xmlDoc.Root.Element("{http://www.idpf.org/2007/opf}manifest").Add(newItem);
+
+            // Save the updated XML document
+            using (var stream = File.Create(filePath))
+            {
+                xmlDoc.Save(stream);
             }
         }
 
@@ -280,7 +334,8 @@ namespace SafariBooksDownload
                             " http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd\"" +
                             " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
                             "<head>\n" +
-                            "<meta charset=\"utf-8\">" +
+                            "<meta charset=\"utf-8\"> \n" +
+                            "<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
                             $"{extraCSSInfo}\n" +
                             "<style type=\"text/css\">" +
                             "body{{margin:1em;background-color:transparent!important;}}" +
