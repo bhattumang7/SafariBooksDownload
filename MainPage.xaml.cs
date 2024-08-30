@@ -1,10 +1,14 @@
 ﻿
 
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
+using Microsoft.Maui.Layouts;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics.Metrics;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
@@ -22,9 +26,9 @@ namespace SafariBooksDownload
     {
         public ObservableCollection<Book> Books { get; set; }
         public ICommand DownloadBookCommand { get;  }
+        public string progressText = "";
 
-        
-        int count = 0;
+        DownloadViewModel progress = new DownloadViewModel();
 
         public MainPage()
         {
@@ -33,9 +37,19 @@ namespace SafariBooksDownload
             
             BindingContext = this;
             downloadbtn.IsEnabled = false;
+            //progressBar.TE
+            progressBar.Value = 0;
+            downloadLabel.IsVisible = false;
+            progressBar.IsVisible = false;
+            progressLabel.IsVisible = false;
             
         }
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         private async void OnSearchButtonClick(object sender, EventArgs e)
         {
@@ -49,77 +63,102 @@ namespace SafariBooksDownload
 
         private async void downloadBook(object sender, EventArgs e)
         {
-            Book selectedBook = (Book)((Button)sender).BindingContext;
-            //await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
-            string _1= await pupulateBookDetails(selectedBook);
-
-            selectedBook.nextedTOC = await getFlatTableOFContent(selectedBook);
-
-            await parepareListOFFiles(selectedBook);
-
-            List<ChappterInfo> chapters = await fetchChapterInfo(selectedBook);
-
-            var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
-            //ensurePathExists(localEpubFolder);
-
-            //var oebpsPath = Path.Join(localEpubFolder, "OEBPS");
-            //ensurePathExists(oebpsPath);
-
-
-            //var stylesPath = Path.Join(oebpsPath, "Styles");
-            //ensurePathExists(stylesPath);
-
-            //var imagesPath = Path.Join(oebpsPath, "Images");
-            //ensurePathExists(imagesPath);
-            string opfPath = "";
-            foreach (var file in selectedBook.fileList)
+            try
             {
-                if (file.full_path.EndsWith(".opf"))
+                progressBar.IsVisible = true;
+                downloadLabel.IsVisible = true;
+                progressLabel.IsVisible = true;
+
+                Book selectedBook = (Book)((Button)sender).BindingContext;
+                //await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
+                progressLabel.Text = "Getting book details";
+                string _1 = await pupulateBookDetails(selectedBook);
+                //selectedBook.nextedTOC = await getFlatTableOFContent(selectedBook);
+
+
+                progressLabel.Text = "Fetching list of files";
+                await parepareListOFFiles(selectedBook);
+
+                progressLabel.Text = "Fetching chapter list";
+                List<ChappterInfo> chapters = await fetchChapterInfo(selectedBook);
+
+                var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
+                //ensurePathExists(localEpubFolder);
+             
+                
+                //var oebpsPath = Path.Join(localEpubFolder, "OEBPS");
+                //ensurePathExists(oebpsPath);
+
+
+                //var stylesPath = Path.Join(oebpsPath, "Styles");
+                //ensurePathExists(stylesPath);
+
+                //var imagesPath = Path.Join(oebpsPath, "Images");
+                //ensurePathExists(imagesPath);
+                progressBar.Value = 0;
+                string opfPath = "";
+                foreach (var file in selectedBook.fileList)
                 {
-                    opfPath = file.full_path;
-                }
-                ChappterInfo selectedChapter = null;
-                foreach (var chapter in chapters)
-                {
-                    if(chapter.content_url == file.url)
+                    if (file.full_path.EndsWith(".opf"))
                     {
-                        selectedChapter = chapter;
+                        opfPath = file.full_path;
                     }
                 }
-                foreach (var file2 in selectedBook.fileList)
-                await DownloadFileAsync(file, Path.Join(localEpubFolder, file.full_path), selectedBook.product_id, selectedChapter);
-            }
-            var containeXMLPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
 
-            // create meta-inf folder.
-            string directoryPath = Path.GetDirectoryName(containeXMLPath);
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-            if (!File.Exists(containeXMLPath))
-            {
-                var xmlString = """
+                        
+                        var s = await DownloadFileAsync(selectedBook, chapters,  localEpubFolder );
+                  
+                var containeXMLPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
+
+                // create meta-inf folder.
+                string directoryPath = Path.GetDirectoryName(containeXMLPath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+                if (!File.Exists(containeXMLPath))
+                {
+                    var xmlString = """
                     <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>
                     """;
-                xmlString = xmlString.Replace("OEBPS/content.opf", opfPath);
-                File.WriteAllText(containeXMLPath, xmlString);
-            }
+                    xmlString = xmlString.Replace("OEBPS/content.opf", opfPath);
+                    File.WriteAllText(containeXMLPath, xmlString);
+                }
                 string folderName = Path.GetFileName(localEpubFolder);
-            string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".zip");
-            string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".epub");
+                string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".zip");
+                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".epub");
 
 
+                downloadLabel.Text = "Generating epub";
+                progressBar.Value = 10;
+                progressLabel.Text = "Creating zip";
+                // Create zip file
+                ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
 
-            // Create zip file
-            ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
+                progressBar.Value = 30;
+                progressLabel.Text = "Creating epub";
 
-            // Rename zip file to .epub
-            File.Move(zipPath, epubPath);
+                if (File.Exists(epubPath))
+                {
+                    File.Delete(epubPath);
+                }
+                // Rename zip file to .epub
+                File.Move(zipPath, epubPath);
 
-            // now lets download the files into oebpsPath folder
-            //await downloadPages(oebpsPath, selectedBook);
-
+                // now lets download the files into oebpsPath folder
+                //await downloadPages(oebpsPath, selectedBook);
+                progressBar.IsVisible = false;
+                downloadLabel.IsVisible = false;
+                progressLabel.IsVisible = false;
+                
+            }
+            catch(Exception exception)
+            {
+                progressBar.IsVisible = false;
+                downloadLabel.IsVisible = false;
+                progressLabel.IsVisible = false;
+                await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace , " ok");
+            }
         }
 
         private async Task<List<ChappterInfo>> fetchChapterInfo(Book selectedBook)
@@ -147,71 +186,118 @@ namespace SafariBooksDownload
             return chappterInfos;
         }
 
-        static async Task DownloadFileAsync(BookFile file, string localPath, string productId, ChappterInfo selectedChapter)
+        private async Task<string> DownloadFileAsync(Book selectedBook, List<ChappterInfo> chapters, string localEpubFolder)
         {
-          
-            string directoryPath = Path.GetDirectoryName(localPath);
-            if (!Directory.Exists(directoryPath))
+            downloadLabel.Text = "Downloading files";
+            int lastPercentage = -1;
+            foreach (var file in selectedBook.fileList)
             {
-                Directory.CreateDirectory(directoryPath);
-            }
-            if (!File.Exists(localPath))
-            {
-              
-                CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-                HttpResponseMessage response = await customHttpClientHandler.GetAsync(file.url);
-
-                byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-
-
-
-                await File.WriteAllBytesAsync(localPath, fileBytes);
                 
-                if(file.media_type == "text/html" || file.media_type== "application/xhtml+xml")
+                ChappterInfo selectedChapter = null;
+                foreach (var chapter in chapters)
                 {
-                    PathAdjuster pathAdjuster = new PathAdjuster(productId);
-                    String extraCSSInfo = "";
-                    if (selectedChapter != null)
+                    if (chapter.content_url == file.url)
                     {
-                        if(selectedChapter.related_assets!= null)
-                        {
-                            if(selectedChapter.related_assets.stylesheets!=null && selectedChapter.related_assets.stylesheets.Count > 0)
-                            {
-                                foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
-                                {
-                                    var adjustedPath = pathAdjuster.AdjustPathsInHtml(styleSheetURL);
-                                    extraCSSInfo += $"<link href=\"{adjustedPath}\" rel=\"stylesheet\" type=\"text/css\" />\n";
-                                }
-                                
-                            }
-                        }
+                        selectedChapter = chapter;
+                    }
+                }
+                var totalFileCount = selectedBook.fileList.Count;
+                int currentFileNo = 1;
+                //progressBar.Value = 0;
+                
+
+                // total fileCOunt  100 
+                //Current
+                foreach (var file2 in selectedBook.fileList)
+                {
+                    int percentDone = (currentFileNo * 100) / totalFileCount;
+                    if (lastPercentage != percentDone)
+                    {
+                        lastPercentage = percentDone;
+                        progressBar.Value = percentDone;
+                            
+                        
+                        ;
+                        progressLabel.Text = $"Downloading files. {percentDone} percentage done. ";
                     }
                     
-                    string adjustedHtml = pathAdjuster.AdjustPathsInHtml(File.ReadAllText(localPath));
-                    var pointMessage = "<!DOCTYPE html>\n" +
-                        "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"" +
-                        " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
-                        " xsi:schemaLocation=\"http://www.w3.org/2002/06/xhtml2/" +
-                        " http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd\"" +
-                        " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
-                        "<head>\n" +
-                        "<meta charset=\"utf-8\">" +
-                        $"{extraCSSInfo}\n" +
-                        "<style type=\"text/css\">" +
-                        "body{{margin:1em;background-color:transparent!important;}}" +
-                        "#sbo-rt-content *{{text-indent:0pt!important;}}#sbo-rt-content .bq{{margin-right:1em!important;}}" +
-                        "img{{height: auto;max-width:100%}}" +
-                        "pre {{background-color:#EEF2F6 !important;padding:0.75em 1.500em !important;}} " +
-                        "</style>" +
-                            "</head>\n" +
-                         $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
-                    File.WriteAllText(localPath, pointMessage);
+                    /*if (currentFileNo % 2 == 0)
+                    {
+                        fileDownloadProgress.Value = 30;
+                    }
+                    else
+                    {
+                        fileDownloadProgress.Value = 31;
+                    }
+                    */
+                    
+                    var localPath = Path.Join(localEpubFolder, file.full_path);
+                    string directoryPath = Path.GetDirectoryName(localPath);
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+                    if (!File.Exists(localPath))
+                    {
+
+                        CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
+                        HttpResponseMessage response = await customHttpClientHandler.GetAsync(file.url);
+
+                        byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+
+
+                        await File.WriteAllBytesAsync(localPath, fileBytes);
+
+                        if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
+                        {
+                            PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
+                            String extraCSSInfo = "";
+                            if (selectedChapter != null)
+                            {
+                                if (selectedChapter.related_assets != null)
+                                {
+                                    if (selectedChapter.related_assets.stylesheets != null && selectedChapter.related_assets.stylesheets.Count > 0)
+                                    {
+                                        foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
+                                        {
+                                            var adjustedPath = pathAdjuster.AdjustPathsInHtml(styleSheetURL);
+                                            extraCSSInfo += $"<link href=\"{adjustedPath}\" rel=\"stylesheet\" type=\"text/css\" />\n";
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            string adjustedHtml = pathAdjuster.AdjustPathsInHtml(File.ReadAllText(localPath));
+                            var pointMessage = "<!DOCTYPE html>\n" +
+                                "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"" +
+                                " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                                " xsi:schemaLocation=\"http://www.w3.org/2002/06/xhtml2/" +
+                                " http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd\"" +
+                                " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
+                                "<head>\n" +
+                                "<meta charset=\"utf-8\">" +
+                                $"{extraCSSInfo}\n" +
+                                "<style type=\"text/css\">" +
+                                "body{{margin:1em;background-color:transparent!important;}}" +
+                                "#sbo-rt-content *{{text-indent:0pt!important;}}#sbo-rt-content .bq{{margin-right:1em!important;}}" +
+                                "img{{height: auto;max-width:100%}}" +
+                                "pre {{background-color:#EEF2F6 !important;padding:0.75em 1.500em !important;}} " +
+                                "</style>" +
+                                    "</head>\n" +
+                                 $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
+                            File.WriteAllText(localPath, pointMessage);
+                        }
+
+                        Console.WriteLine($"File downloaded and saved to {localPath}");
+
+
+                    }
+                    ++currentFileNo;
                 }
-                
-                Console.WriteLine($"File downloaded and saved to {localPath}");
-               
-            
             }
+            return "";
         }
 
         private async Task<String> parepareListOFFiles(Book selectedBook)
@@ -228,11 +314,13 @@ namespace SafariBooksDownload
             var jsonDocument = JsonDocument.Parse(stringResponse);
             int totalFilesCount = jsonDocument.RootElement.GetProperty("count").GetInt32();
 
-            await GetNextUrl(selectedBook, selectedBook.files_URL);
+            progressLabel.Text = $"Total {totalFilesCount} files found. 0 of { totalFilesCount / 20 } page's information fetched.";
+            progressBar.Value = 0;
+            await GetNextUrl(selectedBook, selectedBook.files_URL, totalFilesCount , totalFilesCount / 20, 0);
             return "";
         }
 
-        private async Task<string> GetNextUrl(Book selectedBook, string url)
+        private async Task<string> GetNextUrl(Book selectedBook, string url, int totalFileCount, int pageCount, int downloaded)
         {
             string requestURL = url;
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
@@ -254,12 +342,17 @@ namespace SafariBooksDownload
 
             var fileInfo = JsonSerializer.Deserialize<List<BookFile>>(results, options);
             selectedBook.fileList.AddRange(fileInfo.ToList());
+            float percentageDone = (downloaded * 100) / pageCount;
+            //pageCount 100
+            //downloaded 
+            progressLabel.Text = $"Total {totalFilesCount} files found. {++downloaded} of {pageCount} page's information fetched.";
+            progressBar.Value = percentageDone;
             if (jsonDocument.RootElement.TryGetProperty("next", out JsonElement next))
             {
                 var nextString = next.GetString();
                 if (nextString != null)
                 {
-                    await GetNextUrl(selectedBook, next.GetString());
+                    await GetNextUrl(selectedBook, next.GetString(), totalFileCount , pageCount, downloaded);
                 }
             }
             return "";

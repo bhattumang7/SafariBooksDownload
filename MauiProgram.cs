@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Telerik.Maui.Controls.Compatibility;
 
 namespace SafariBooksDownload
 {
@@ -8,6 +9,7 @@ namespace SafariBooksDownload
         {
             var builder = MauiApp.CreateBuilder();
             builder
+                .UseTelerik()
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {

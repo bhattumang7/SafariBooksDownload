@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:telerik="http://schemas.telerik.com/2022/xaml/maui"
              x:Class="SafariBooksDownload.MainPage">
 
     <ScrollView>
@@ -15,6 +16,14 @@
 
             <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" Navigated="AuthWebView_OnNavigated" />
 
+            <Label  x:Name="downloadLabel"  />
+                    
+            <telerik:RadLinearProgressBar x:Name="progressBar" Value="0"
+                              HeightRequest="20"
+                              ProgressCornerRadius="5"
+                              TrackCornerRadius="5" />
+
+            <Label x:Name="progressLabel" />
             <ListView ItemsSource="{Binding Books}">
                 <ListView.RowHeight>250</ListView.RowHeight>
                 <ListView.ItemTemplate>
