@@ -28,6 +28,11 @@
                 </ListView.ItemTemplate>
             </ListView>-->
 
+
+
+            <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/"
+Navigated="AuthWebView_OnNavigated" />
+
             <ListView ItemsSource="{Binding Books}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -35,9 +40,9 @@
                             <StackLayout x:Name="itemLayout" Orientation="Horizontal" Spacing="5">
                                 <Image Source="{Binding cover_image}" HeightRequest="100" WidthRequest="100" />
                                 <StackLayout Orientation="Vertical" Spacing="5">
-                                    <Label Text="{Binding title}" FontSize="Large" />
-                                    <Label Text="{Binding authors}" FontSize="Small" />
-                                    <Label Text="{Binding product_id}" FontSize="Small" />
+                                    <Label Text="{Binding title}" FontSize="Large" HorizontalOptions="FillAndExpand" />
+                                    <Label Text="{Binding authors}" FontSize="Small"  HorizontalOptions="FillAndExpand"/>
+                                    <Label Text="{Binding product_id}" FontSize="Small" HorizontalOptions="FillAndExpand" />
                                 </StackLayout>
                                 <Button Text="Download" Clicked="downloadBook" CommandParameter="{Binding .}" />
                             </StackLayout>
@@ -73,6 +78,7 @@
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Fill" />
+            
         </VerticalStackLayout>
     </ScrollView>
 

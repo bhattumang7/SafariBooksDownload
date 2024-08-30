@@ -2,9 +2,11 @@
 
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 
 namespace SafariBooksDownload
@@ -13,6 +15,8 @@ namespace SafariBooksDownload
     {
         public ObservableCollection<Book> Books { get; set; }
         public ICommand DownloadBookCommand { get;  }
+
+        
         int count = 0;
 
         public MainPage()
@@ -53,6 +57,22 @@ namespace SafariBooksDownload
 
         }
 
+        private async void AuthWebView_OnNavigated(object sender, WebNavigatedEventArgs e)
+        {
+            if (e.Result == WebNavigationResult.Success)
+            {
+                var webView = sender as WebView;
+                if(e.Url=="https://learning.oreilly.com/home/")
+                {
+                    string output = await webView.EvaluateJavaScriptAsync("JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
+                    output = Regex.Unescape(output);
+                    webView.IsVisible = false;
+                    File.WriteAllText(Config.COOKIES_FILE, output);
+                    
+                    
+                }
+            }
+        }
 
         private async Task<string> getJsonAsync(String searchContent)
         {
