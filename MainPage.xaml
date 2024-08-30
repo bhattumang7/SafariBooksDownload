@@ -13,23 +13,6 @@
 
             </HorizontalStackLayout>
 
-            <!--<ListView ItemsSource="{Binding Books}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout Orientation="Horizontal">
-                            --><!--<Image Source="{Binding cover_image}" HeightRequest="100" WidthRequest="100" />--><!--
-                            <StackLayout Orientation="Vertical" Spacing="5">
-                                <Label Text="{Binding title}" FontSize="Large" />
-                                <Label Text="{Binding product_id}" FontSize="Small" />
-                                <Label Text="{Binding authors}" FontSize="Small" />
-                            </StackLayout>
-                        </StackLayout>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>-->
-
-
-
             <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile"
 Navigated="AuthWebView_OnNavigated" />
 
