@@ -9,7 +9,7 @@
             Spacing="25">
             <HorizontalStackLayout>
                 <Entry x:Name="bookName" Text="design" Placeholder="Enter book name here"  />
-                <Button Text="Click me!" Clicked="OnSearchButtonClick" />
+                <Button x:Name="downloadbtn" Text="Click me!" Clicked="OnSearchButtonClick" />
 
             </HorizontalStackLayout>
 
@@ -30,19 +30,20 @@
 
 
 
-            <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/"
+            <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile"
 Navigated="AuthWebView_OnNavigated" />
 
             <ListView ItemsSource="{Binding Books}">
+                <ListView.RowHeight>250</ListView.RowHeight>
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout x:Name="itemLayout" Orientation="Horizontal" Spacing="5">
+                            <StackLayout x:Name="itemLayout" Orientation="Horizontal" WidthRequest="400" HeightRequest="250" VerticalOptions="Fill" HorizontalOptions="Fill">
                                 <Image Source="{Binding cover_image}" HeightRequest="100" WidthRequest="100" />
-                                <StackLayout Orientation="Vertical" Spacing="5">
-                                    <Label Text="{Binding title}" FontSize="Large" HorizontalOptions="FillAndExpand" />
-                                    <Label Text="{Binding authors}" FontSize="Small"  HorizontalOptions="FillAndExpand"/>
-                                    <Label Text="{Binding product_id}" FontSize="Small" HorizontalOptions="FillAndExpand" />
+                                <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                                    <Label Text="{Binding title}" FontSize="Large" LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding authors}" FontSize="Small"   />
+                                    <Label Text="{Binding product_id}" FontSize="Small"  />
                                 </StackLayout>
                                 <Button Text="Download" Clicked="downloadBook" CommandParameter="{Binding .}" />
                             </StackLayout>

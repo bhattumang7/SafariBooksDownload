@@ -25,6 +25,7 @@ namespace SafariBooksDownload
             Books = new ObservableCollection<Book>();
             
             BindingContext = this;
+            downloadbtn.IsEnabled = false;
             
         }
 
@@ -62,14 +63,16 @@ namespace SafariBooksDownload
             if (e.Result == WebNavigationResult.Success)
             {
                 var webView = sender as WebView;
-                if(e.Url=="https://learning.oreilly.com/home/")
+                if(e.Url== "https://learning.oreilly.com/profile/")
                 {
                     string output = await webView.EvaluateJavaScriptAsync("JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
                     output = Regex.Unescape(output);
-                    webView.IsVisible = false;
+                    
                     File.WriteAllText(Config.COOKIES_FILE, output);
-                    
-                    
+                    webView.IsVisible = false;
+                    downloadbtn.IsEnabled = true;
+
+
                 }
             }
         }
