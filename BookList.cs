@@ -17,7 +17,12 @@ namespace SafariBooksDownload
         public string url { get; set; }
         public List<String> chapters { get; set; }
 
+        public String isbn { get; set; }
 
+        /// <summary>
+        /// Table of contents
+        /// </summary>
+        public String toc { get; set; }
         public string getTitle_file_name_safe()
         {
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));

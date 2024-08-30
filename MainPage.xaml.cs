@@ -44,7 +44,7 @@ namespace SafariBooksDownload
         private async void downloadBook(object sender, EventArgs e)
         {
             Book selectedBook = (Book)((Button)sender).BindingContext;
-            await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
+            //await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
             string _1= await pupulateBookDetails(selectedBook);
 
             var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
@@ -107,6 +107,9 @@ namespace SafariBooksDownload
             {
               book.chapters.Add(chapter.GetString());
             }
+
+            book.isbn = jsonDocument.RootElement.GetProperty("isbn").GetString();
+            book.toc = jsonDocument.RootElement.GetProperty("toc").GetString();
 
             return "";
         }
