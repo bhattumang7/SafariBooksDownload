@@ -1,12 +1,14 @@
 ﻿
 
 using Microsoft.Maui.Controls;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 
@@ -47,6 +49,9 @@ namespace SafariBooksDownload
             //await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
             string _1= await pupulateBookDetails(selectedBook);
 
+            List<JsonNodeInfo> listOfTableOfContent = await getFlatTableOFContent(selectedBook);
+            
+
             var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
             ensurePathExists(localEpubFolder);
 
@@ -63,6 +68,36 @@ namespace SafariBooksDownload
             // now lets download the files into oebpsPath folder
             await downloadPages(oebpsPath, selectedBook);
 
+        }
+
+        private async Task<List<JsonNodeInfo>> getFlatTableOFContent(Book selectedBook)
+        {
+            List < JsonNodeInfo > tableOfCOntent = new List<JsonNodeInfo>();
+            string requestURL = selectedBook.flat_toc;
+            CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
+            var response = await customHttpClientHandler.GetAsync(requestURL);
+
+            response.EnsureSuccessStatusCode();
+            var byteArray = await response.Content.ReadAsByteArrayAsync();
+            var stringResponse = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
+
+            var jsonDocument = JsonDocument.Parse(stringResponse);
+            foreach (var tocItem in jsonDocument.RootElement.EnumerateArray())
+            {
+                tableOfCOntent.Add(new JsonNodeInfo()
+                {
+                    depth = tocItem.GetProperty("depth").GetInt32(),
+                    url = tocItem.GetProperty("url").GetString(),
+                    fragment = tocItem.GetProperty("fragment").GetString(),
+                    filename = tocItem.GetProperty("filename").GetString(),
+                    order = tocItem.GetProperty("order").GetInt32(),
+                    label  = tocItem.GetProperty("label").GetString(),
+                    full_path = tocItem.GetProperty("full_path").GetString(),
+                    href = tocItem.GetProperty("href").GetString(),
+                    media_type = tocItem.GetProperty("media_type").GetString()
+                });
+            }
+            return tableOfCOntent;
         }
 
         private async Task<string> downloadPages(String oebpsPath, Book selectedBook)
@@ -110,6 +145,7 @@ namespace SafariBooksDownload
 
             book.isbn = jsonDocument.RootElement.GetProperty("isbn").GetString();
             book.toc = jsonDocument.RootElement.GetProperty("toc").GetString();
+            book.flat_toc = jsonDocument.RootElement.GetProperty("flat_toc").GetString();
 
             return "";
         }

@@ -8,7 +8,7 @@
             Padding="30,0"
             Spacing="25">
             <HorizontalStackLayout>
-                <Entry x:Name="bookName" Placeholder="Enter book name here"  />
+                <Entry x:Name="bookName" Text="9781633439108" Placeholder="Enter book name here"  />
                 <Button x:Name="downloadbtn" Text="Search book" Clicked="OnSearchButtonClick" />
 
             </HorizontalStackLayout>

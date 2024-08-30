@@ -19,6 +19,8 @@ namespace SafariBooksDownload
 
         public String isbn { get; set; }
 
+        public string flat_toc { get; set; }
+
         /// <summary>
         /// Table of contents
         /// </summary>
