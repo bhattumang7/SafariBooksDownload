@@ -300,6 +300,14 @@ namespace SafariBooksDownload
 
                     await File.WriteAllBytesAsync(localPath, fileBytes);
 
+                    if (file.media_type == "text/html")
+                    {
+                        string content = File.ReadAllText(localPath);
+                        content.Replace("display: none", "visibility: hidden");
+                        content.Replace("display:none", "visibility: hidden");
+                        File.WriteAllText(localPath, content);
+                    }
+
                     if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
                     {
                         PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
@@ -327,15 +335,38 @@ namespace SafariBooksDownload
                             " xsi:schemaLocation=\"http://www.w3.org/2002/06/xhtml2/" +
                             " http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd\"" +
                             " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
+                            $" <title> { selectedBook.title } </title> \n" +
                             "<head>\n" +
                             "<meta charset=\"utf-8\"> \n" +
                             "<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
                             $"{extraCSSInfo}\n" +
-                            "<style type=\"text/css\">" +
-                            "body{{margin:1em;background-color:transparent!important;}}" +
-                            "#sbo-rt-content *{{text-indent:0pt!important;}}#sbo-rt-content .bq{{margin-right:1em!important;}}" +
-                            "img{{height: auto;max-width:100%}}" +
-                            "pre {{background-color:#EEF2F6 !important;padding:0.75em 1.500em !important;}} " +
+                            """
+                                                        <style type="text/css">
+                              body {
+                                margin: 1em;
+                                background-color: transparent !important;
+                              }
+                              #sbo-rt-content * {
+                                text-indent: 0pt !important;
+                              }
+                              #sbo-rt-content .bq {
+                                margin-right: 1em !important;
+                              }
+                              {%- if should_support_kindle -%}
+                              #sbo-rt-content * {
+                                word-wrap: break-word !important;
+                                word-break: break-word !important;
+                              }
+                              #sbo-rt-content table,
+                              #sbo-rt-content pre {
+                                overflow-x: unset !important;
+                                overflow: unset !important;
+                                overflow-y: unset !important;
+                                white-space: pre-wrap !important;
+                              }
+                              {%- endif -%}
+                            </style>
+                            """ +
                             "</style>" +
                                 "</head>\n" +
                                 $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
