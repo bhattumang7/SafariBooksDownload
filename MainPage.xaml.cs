@@ -92,34 +92,12 @@ namespace SafariBooksDownload
                 List<ChappterInfo> chapters = await fetchChapterInfo(selectedBook);
 
                 var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
-                //ensurePathExists(localEpubFolder);
-             
-                
-                //var oebpsPath = Path.Join(localEpubFolder, "OEBPS");
-                //ensurePathExists(oebpsPath);
 
 
-                //var stylesPath = Path.Join(oebpsPath, "Styles");
-                //ensurePathExists(stylesPath);
-
-                //var imagesPath = Path.Join(oebpsPath, "Images");
-                //ensurePathExists(imagesPath);
                 progress.ProgressBarValue = 0;
-                string opfPath = "";
-                foreach (var file in selectedBook.fileList)
-                {
-                    if (file.full_path.EndsWith(".opf"))
-                    {
-                        opfPath = file.full_path;
-                        break;
-                    }
-                }
+                string opfPath = getOpfFileFullPathFromBook(selectedBook.fileList);
 
-
-                        
-                var s = await DownloadFileAsync(selectedBook, chapters,  localEpubFolder );
-                  
-                var containeXMLPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
+                var s = await DownloadFileAsync(selectedBook, chapters, localEpubFolder);
 
                 // put additional file 
                 //var sourceCssFilePath = Path.Combine(FileSystem.AppDataDirectory, "Resources", "Raw", );
@@ -127,9 +105,10 @@ namespace SafariBooksDownload
                 var sourceFileContent = await ReadTextFileAsync("override_v1.css");
                 File.WriteAllText(targetOverrideCSSFilePath, sourceFileContent);
 
-                await AddOverrideCSSToManifest(Path.Join (localEpubFolder,  opfPath));
+                await AddOverrideCSSToManifest(Path.Join(localEpubFolder, opfPath));
 
                 // create meta-inf folder.
+                var containeXMLPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
                 string directoryPath = Path.GetDirectoryName(containeXMLPath);
                 if (!Directory.Exists(directoryPath))
                 {
@@ -149,7 +128,7 @@ namespace SafariBooksDownload
 
 
                 progress.DownloadLabel = "Generating epub";
-                progress.ProgressBarValue  = 10;
+                progress.ProgressBarValue = 10;
                 progress.ProgressLabel = "Creating zip";
                 // Create zip file
                 ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
@@ -171,7 +150,7 @@ namespace SafariBooksDownload
                 progressLabel.IsVisible = false;
                 booksListView.IsVisible = true;
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 progressBar.IsVisible = false;
                 downloadLabel.IsVisible = false;
@@ -179,6 +158,21 @@ namespace SafariBooksDownload
                 booksListView.IsVisible = true;
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace , " ok");
             }
+        }
+
+        private static string getOpfFileFullPathFromBook(List<BookFile> listBookFiles)
+        {
+            string opfPath = "";
+            foreach (var file in listBookFiles)
+            {
+                if (file.full_path.EndsWith(".opf"))
+                {
+                    opfPath = file.full_path;
+                    break;
+                }
+            }
+
+            return opfPath;
         }
 
         public async Task<string> ReadTextFileAsync(string fileName)
