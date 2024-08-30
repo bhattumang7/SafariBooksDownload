@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.Maui.Controls;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Net;
@@ -42,13 +43,54 @@ namespace SafariBooksDownload
 
         private async void downloadBook(object sender, EventArgs e)
         {
-            Book selectedBook = (Book) ((Button)sender).BindingContext;
-            await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id +  "book selected" + "book selected" , " ok");
-            pupulateChapterList(selectedBook);
+            Book selectedBook = (Book)((Button)sender).BindingContext;
+            await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
+            string _1= await pupulateChapterList(selectedBook);
+
+            var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
+            ensurePathExists(localEpubFolder);
+
+            var oebpsPath = Path.Join(localEpubFolder, "OEBPS");
+            ensurePathExists(oebpsPath);
+
+
+            var stylesPath = Path.Join(oebpsPath, "Styles");
+            ensurePathExists(stylesPath);
+
+            var imagesPath = Path.Join(oebpsPath, "Images");
+            ensurePathExists(imagesPath);
+
+            // now lets download the files into oebpsPath folder
+            await downloadPages(oebpsPath, selectedBook);
 
         }
 
-        private async void pupulateChapterList(Book book)
+        private async Task<string> downloadPages(String oebpsPath, Book selectedBook)
+        {
+            foreach(string chapter in selectedBook.chapters)
+            {
+                CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
+                var response = await customHttpClientHandler.GetAsync(chapter);
+
+                response.EnsureSuccessStatusCode();
+                var byteArray = await response.Content.ReadAsByteArrayAsync();
+                var stringResponse = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
+                int i = 12;
+            }
+            return "";
+        }
+
+        private static void ensurePathExists(string localEpubFolder)
+        {
+            bool exists = System.IO.Directory.Exists(localEpubFolder);
+
+            if (!exists)
+            {
+                System.IO.Directory.CreateDirectory(localEpubFolder);
+            }
+        }
+
+        private async Task<string> pupulateChapterList(Book book)
         {
             string requestURL = "https://learning.oreilly.com/api/v1/book/" + book.product_id + "/";
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
@@ -66,7 +108,7 @@ namespace SafariBooksDownload
               book.chapters.Add(chapter.GetString());
             }
 
-          
+            return "";
         }
 
         private async void AuthWebView_OnNavigated(object sender, WebNavigatedEventArgs e)

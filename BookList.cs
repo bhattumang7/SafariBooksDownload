@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Maui.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,13 @@ namespace SafariBooksDownload
         public string description { get; set; }
         public string url { get; set; }
         public List<String> chapters { get; set; }
+
+
+        public string getTitle_file_name_safe()
+        {
+            return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
+        }
+
     
     }
 }

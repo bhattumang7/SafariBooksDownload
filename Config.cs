@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,5 +22,7 @@ namespace SafariBooksDownload
         public static string PROFILE_URL = SAFARI_BASE_URL + "/profile/";
 
         public static string PATH { get => pATH; set => pATH = value; }
+
+        public static string BooksPath = @"C:\Umang\NewDownloader\";
     }
 }

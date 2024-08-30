@@ -13,8 +13,7 @@
 
             </HorizontalStackLayout>
 
-            <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile"
-Navigated="AuthWebView_OnNavigated" />
+            <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" Navigated="AuthWebView_OnNavigated" />
 
             <ListView ItemsSource="{Binding Books}">
                 <ListView.RowHeight>250</ListView.RowHeight>
