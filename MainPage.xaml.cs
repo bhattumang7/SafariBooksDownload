@@ -45,7 +45,7 @@ namespace SafariBooksDownload
         {
             Book selectedBook = (Book)((Button)sender).BindingContext;
             await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
-            string _1= await pupulateChapterList(selectedBook);
+            string _1= await pupulateBookDetails(selectedBook);
 
             var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
             ensurePathExists(localEpubFolder);
@@ -90,7 +90,7 @@ namespace SafariBooksDownload
             }
         }
 
-        private async Task<string> pupulateChapterList(Book book)
+        private async Task<string> pupulateBookDetails(Book book)
         {
             string requestURL = "https://learning.oreilly.com/api/v1/book/" + book.product_id + "/";
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
