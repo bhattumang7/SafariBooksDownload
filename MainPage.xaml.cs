@@ -120,12 +120,8 @@ namespace SafariBooksDownload
                         authors = string.Join(", ", bookEntry.GetProperty("authors").EnumerateArray().Select(author => author.GetString()))
 
                     };
-
                     Books.Add(book);
-                  //  await DisplayAlert("asdf ", "\n" + response.StatusCode.ToString(), " ok");
                 }
-                //books.Add(localList);
-                //await DisplayAlert("asdf ", "\n" + Books.Count + " \n " + response.StatusCode.ToString(), " ok");
             }
             catch (Exception ex)
             {
