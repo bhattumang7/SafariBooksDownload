@@ -30,7 +30,7 @@ namespace SafariBooksDownload
             client.DefaultRequestHeaders.Add("Accept", @"*/*"); // Example 
             client.DefaultRequestHeaders.Add("Accept-Encoding", @"deflate"); // Example 
             client.DefaultRequestHeaders.Add("Referer", @"https://learning.oreilly.com/"); // Example
-            client.DefaultRequestHeaders.Add("Host", @"www.oreilly.com"); // Example
+            //client.DefaultRequestHeaders.Add("Host", @"www.oreilly.com"); // Example
 
 
             //client.DefaultRequestHeaders.Accept.Clear();
@@ -44,6 +44,7 @@ namespace SafariBooksDownload
         {
             try
             {
+                client.DefaultRequestHeaders.Add("Host", new Uri(url).Host);
                 var response = await client.GetAsync(url);
                 UpdateCookies(response);  // Update cookies after the request
                 return response;
