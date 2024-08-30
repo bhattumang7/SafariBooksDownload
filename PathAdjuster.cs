@@ -20,7 +20,8 @@ namespace SafariBooksDownload
         public string AdjustPathsInHtml(string htmlContent)
         {
             // Replace the base URL with the local base path
-            string adjustedHtml = htmlContent.Replace(_baseUrl, _localBasePath);
+            string  adjustedHtml = htmlContent.Replace("https://learning.oreilly.com" + _baseUrl, "");
+            adjustedHtml = adjustedHtml.Replace(_baseUrl, _localBasePath);
             return adjustedHtml;
         }
     }

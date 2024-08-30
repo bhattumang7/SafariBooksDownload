@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.Maui.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
@@ -13,7 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
-using Windows.ApplicationModel.VoiceCommands;
+
 
 namespace SafariBooksDownload
 {
@@ -56,19 +57,20 @@ namespace SafariBooksDownload
 
             await parepareListOFFiles(selectedBook);
 
+            List<ChappterInfo> chapters = await fetchChapterInfo(selectedBook);
 
             var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
-            ensurePathExists(localEpubFolder);
+            //ensurePathExists(localEpubFolder);
 
-            var oebpsPath = Path.Join(localEpubFolder, "OEBPS");
-            ensurePathExists(oebpsPath);
+            //var oebpsPath = Path.Join(localEpubFolder, "OEBPS");
+            //ensurePathExists(oebpsPath);
 
 
-            var stylesPath = Path.Join(oebpsPath, "Styles");
-            ensurePathExists(stylesPath);
+            //var stylesPath = Path.Join(oebpsPath, "Styles");
+            //ensurePathExists(stylesPath);
 
-            var imagesPath = Path.Join(oebpsPath, "Images");
-            ensurePathExists(imagesPath);
+            //var imagesPath = Path.Join(oebpsPath, "Images");
+            //ensurePathExists(imagesPath);
             string opfPath = "";
             foreach (var file in selectedBook.fileList)
             {
@@ -76,7 +78,16 @@ namespace SafariBooksDownload
                 {
                     opfPath = file.full_path;
                 }
-                await DownloadFileAsync(BookFile file, Path.Join(localEpubFolder, file.full_path), selectedBook.product_id);
+                ChappterInfo selectedChapter = null;
+                foreach (var chapter in chapters)
+                {
+                    if(chapter.content_url == file.url)
+                    {
+                        selectedChapter = chapter;
+                    }
+                }
+                foreach (var file2 in selectedBook.fileList)
+                await DownloadFileAsync(file, Path.Join(localEpubFolder, file.full_path), selectedBook.product_id, selectedChapter);
             }
             var containeXMLPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
 
@@ -111,7 +122,32 @@ namespace SafariBooksDownload
 
         }
 
-        static async Task DownloadFileAsync(BookFile file, string localPath, string productId)
+        private async Task<List<ChappterInfo>> fetchChapterInfo(Book selectedBook)
+        {
+            List<ChappterInfo> chappterInfos = new List<ChappterInfo>();
+            string requestURL = "https://learning.oreilly.com/api/v2/epub-chapters/?epub_identifier=urn:orm:book:" + selectedBook.product_id;
+            CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
+            var response = await customHttpClientHandler.GetAsync(requestURL);
+
+            response.EnsureSuccessStatusCode();
+            var byteArray = await response.Content.ReadAsByteArrayAsync();
+            var stringResponse = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
+
+
+            var jsonDocument = JsonDocument.Parse(stringResponse);
+            int totalFilesCount = jsonDocument.RootElement.GetProperty("count").GetInt32();
+            var results = jsonDocument.RootElement.GetProperty("results");
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                WriteIndented = true,
+            };
+
+            chappterInfos = JsonSerializer.Deserialize<List<ChappterInfo>>(results, options);
+            return chappterInfos;
+        }
+
+        static async Task DownloadFileAsync(BookFile file, string localPath, string productId, ChappterInfo selectedChapter)
         {
           
             string directoryPath = Path.GetDirectoryName(localPath);
@@ -134,6 +170,23 @@ namespace SafariBooksDownload
                 if(file.media_type == "text/html")
                 {
                     PathAdjuster pathAdjuster = new PathAdjuster(productId);
+                    String extraCSSInfo = "";
+                    if (selectedChapter != null)
+                    {
+                        if(selectedChapter.related_assets!= null)
+                        {
+                            if(selectedChapter.related_assets.stylesheets!=null && selectedChapter.related_assets.stylesheets.Count > 0)
+                            {
+                                foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
+                                {
+                                    var adjustedPath = pathAdjuster.AdjustPathsInHtml(styleSheetURL);
+                                    extraCSSInfo += $"<link href=\"{adjustedPath}\" rel=\"stylesheet\" type=\"text/css\" />\n";
+                                }
+                                
+                            }
+                        }
+                    }
+                    
                     string adjustedHtml = pathAdjuster.AdjustPathsInHtml(File.ReadAllText(localPath));
                     var pointMessage = "<!DOCTYPE html>\n" +
                         "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"" +
@@ -143,7 +196,7 @@ namespace SafariBooksDownload
                         " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
                         "<head>\n" +
                         "<meta charset=\"utf-8\">" +
-                        "{0}\n" +
+                        $"{extraCSSInfo}\n" +
                         "<style type=\"text/css\">" +
                         "body{{margin:1em;background-color:transparent!important;}}" +
                         "#sbo-rt-content *{{text-indent:0pt!important;}}#sbo-rt-content .bq{{margin-right:1em!important;}}" +
