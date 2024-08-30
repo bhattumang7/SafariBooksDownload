@@ -29,17 +29,6 @@ namespace SafariBooksDownload
             
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
-        }
 
         private async void OnSearchButtonClick(object sender, EventArgs e)
         {
@@ -136,7 +125,7 @@ namespace SafariBooksDownload
                   //  await DisplayAlert("asdf ", "\n" + response.StatusCode.ToString(), " ok");
                 }
                 //books.Add(localList);
-                await DisplayAlert("asdf ", "\n" + Books.Count + " \n " + response.StatusCode.ToString(), " ok");
+                //await DisplayAlert("asdf ", "\n" + Books.Count + " \n " + response.StatusCode.ToString(), " ok");
             }
             catch (Exception ex)
             {

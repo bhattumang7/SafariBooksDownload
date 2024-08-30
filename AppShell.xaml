@@ -8,7 +8,7 @@
     Title="SafariBooksDownload">
 
     <ShellContent
-        Title="Home"
+        Title="O'Rielly Book download"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
