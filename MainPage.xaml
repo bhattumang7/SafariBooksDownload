@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:telerik="http://schemas.telerik.com/2022/xaml/maui"
-             x:Class="SafariBooksDownload.MainPage">
+             xmlns:local="clr-namespace:SafariBooksDownload"
+             x:Class="SafariBooksDownload.MainPage"
+             x:DataType="local:MainViewModel">
 
     <ScrollView>
         <VerticalStackLayout
@@ -16,25 +18,24 @@
 
             <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" Navigated="AuthWebView_OnNavigated" />
 
-            <Label  x:Name="downloadLabel"  />
-                    
-            <telerik:RadLinearProgressBar x:Name="progressBar" Value="0"
-                              HeightRequest="20"
-                              ProgressCornerRadius="5"
-                              TrackCornerRadius="5" />
+            <Label x:Name="downloadLabel" Text="{Binding DownloadProgress.DownloadLabel}" />
+            <telerik:RadLinearProgressBar x:Name="progressBar" Value="{Binding DownloadProgress.ProgressBarValue}"
+                                      HeightRequest="20"
+                                      ProgressCornerRadius="5"
+                                      TrackCornerRadius="5" />
+            <Label x:Name="progressLabel" Text="{Binding DownloadProgress.ProgressLabel}" />
 
-            <Label x:Name="progressLabel" />
-            <ListView ItemsSource="{Binding Books}">
+            <ListView x:Name="booksListView" ItemsSource="{Binding Books}">
                 <ListView.RowHeight>250</ListView.RowHeight>
                 <ListView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="local:Book">
                         <ViewCell>
                             <StackLayout x:Name="itemLayout" Orientation="Horizontal" WidthRequest="800" HeightRequest="250" VerticalOptions="Fill" HorizontalOptions="Fill">
                                 <Image Source="{Binding cover_image}" HeightRequest="100" WidthRequest="100" />
                                 <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
                                     <Label Text="{Binding title}" FontSize="Large" LineBreakMode="WordWrap" />
-                                    <Label Text="{Binding authors}" FontSize="Small"   />
-                                    <Label Text="{Binding product_id}" FontSize="Small"  />
+                                    <Label Text="{Binding authors}" FontSize="Small" />
+                                    <Label Text="{Binding product_id}" FontSize="Small" />
                                 </StackLayout>
                                 <Button Text="Download" Clicked="downloadBook" CommandParameter="{Binding .}" HeightRequest="100"/>
                             </StackLayout>
@@ -42,6 +43,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+
 
 
         </VerticalStackLayout>
