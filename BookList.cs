@@ -9,6 +9,10 @@ namespace SafariBooksDownload
 {
     public class Book
     {
+        public Book() 
+        {
+            fileList = new List<BookFile>();
+        }
         public String title { get; set; }
         public String product_id { get; set; }
         public String cover_image { get; set; }
@@ -20,11 +24,14 @@ namespace SafariBooksDownload
         public String isbn { get; set; }
 
         public string flat_toc { get; set; }
+        public string files_URL { get; set; }
 
+        public List<BookFile> fileList {get;set;}
+        public List<JsonNodeInfo> nextedTOC { get; set; }
         /// <summary>
         /// Table of contents
         /// </summary>
-        public String toc { get; set; }
+        public String table_of_contents { get; set; }
         public string getTitle_file_name_safe()
         {
             return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
