@@ -228,9 +228,11 @@ namespace SafariBooksDownload
             XDocument xmlDoc = XDocument.Load(filePath);
 
             // Create a new item element
-            XElement newItem = new XElement("item",
+            XNamespace ns = "http://www.idpf.org/2007/opf";
+
+            XElement newItem = new XElement(ns + "item",
                 new XAttribute("id", "Oververyowncustomoverrideumang"),
-                new XAttribute("href", filePath),
+                new XAttribute("href", "override_v1.css"),
                 new XAttribute("media-type", "text/css")
             );
 
@@ -367,7 +369,7 @@ namespace SafariBooksDownload
                                 if (selectedChapter.related_assets.stylesheets != null && selectedChapter.related_assets.stylesheets.Count > 0)
                                 {
 
-                                    selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:9781633439108/files/override_v1.css");
+                                    selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" +selectedBook.product_id  +  "/files/override_v1.css");
                                     foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
                                     {
                                         string path = GetRelativePath(selectedBook, file.url, styleSheetURL);
@@ -523,16 +525,25 @@ namespace SafariBooksDownload
         private static string GetRelativePath(Book selectedBook, string fromPath, string toPath)
         {
             var fromUri = new Uri(fromPath);
+            Uri toPthUri = new Uri(toPath, UriKind.RelativeOrAbsolute);
+            
             if (!Uri.IsWellFormedUriString(toPath, UriKind.Absolute))
             {
+                bool found = false;
                 foreach (var file in selectedBook.fileList)
                 {
                     if (file.url.EndsWith(toPath)){
+                        found = true;
                         toPath = file.url;
                         break;
                     }
                 }
+                if (!found)
+                {
+                    return toPath;
+                }
             }
+            
             var toUri = new Uri(toPath);
 
             var relativeUri = fromUri.MakeRelativeUri(toUri);
