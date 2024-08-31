@@ -334,16 +334,21 @@ namespace SafariBooksDownload
                     {
                         PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
                         String extraCSSInfo = "";
+                        
                         if (selectedChapter != null)
                         {
                             if (selectedChapter.related_assets != null)
                             {
                                 if (selectedChapter.related_assets.stylesheets != null && selectedChapter.related_assets.stylesheets.Count > 0)
                                 {
+
+                                    selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:9781633439108/files/override_v1.css");
                                     foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
                                     {
+                                        string path = GetRelativePath(file.url, styleSheetURL);
+
                                         var adjustedPath = pathAdjuster.AdjustPathsInHtml(styleSheetURL);
-                                        extraCSSInfo += $"<link href=\"{adjustedPath}\" rel=\"stylesheet\" type=\"text/css\" />\n";
+                                        extraCSSInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
                                     }
 
                                 }
@@ -360,7 +365,7 @@ namespace SafariBooksDownload
                             $" <title> { selectedBook.title } </title> \n" +
                             "<head>\n" +
                             "<meta charset=\"utf-8\" /> \n" +
-                            "<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
+                            //"<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
                             $"{extraCSSInfo}\n" +
                             """
                                                         <style type="text/css">
@@ -403,6 +408,15 @@ namespace SafariBooksDownload
             
             }
             return "";
+        }
+
+        private static string GetRelativePath(string fromPath, string toPath)
+        {
+            var fromUri = new Uri(fromPath);
+            var toUri = new Uri(toPath);
+
+            var relativeUri = fromUri.MakeRelativeUri(toUri);
+            return Uri.UnescapeDataString(relativeUri.ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
 
         private byte[] OptimizeImage(byte[] imageBytes)
