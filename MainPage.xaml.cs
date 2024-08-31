@@ -58,11 +58,11 @@ namespace SafariBooksDownload
             progressBar.IsVisible = false;
             progressLabel.IsVisible = false;
 
-            if (File.Exists(Config.COOKIES_FILE))
+            /*if (File.Exists(Config.COOKIES_FILE))
             {
                 AuthWebView.IsVisible = false;
                 downloadbtn.IsEnabled = true;
-            }
+            }*/
             
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -234,13 +234,20 @@ namespace SafariBooksDownload
                 new XAttribute("media-type", "text/css")
             );
 
-            // Add the new item to the manifest
-            xmlDoc.Root.Element("{http://www.idpf.org/2007/opf}manifest").Add(newItem);
+            XElement existingItem = xmlDoc.Root.Element("{http://www.idpf.org/2007/opf}manifest")
+                .Elements("item")
+                .FirstOrDefault(e => e.Attribute("id")?.Value == "Oververyowncustomoverrideumang");
 
-            // Save the updated XML document
-            using (var stream = File.Create(filePath))
+            if (existingItem == null)
             {
-                xmlDoc.Save(stream);
+                // Add the new item to the manifest
+                xmlDoc.Root.Element("{http://www.idpf.org/2007/opf}manifest").Add(newItem);
+
+                // Save the updated XML document
+                using (var stream = File.Create(filePath))
+                {
+                    xmlDoc.Save(stream);
+                }
             }
         }
 
@@ -337,21 +344,8 @@ namespace SafariBooksDownload
 
                         // Parse the CSS content
                         var stylesheet = parser.ParseStyleSheet(cssContent);
-
-                        // Iterate over all CSS rules
-                        foreach (var rule in stylesheet.Rules)
-                        {
-                            if (rule is ICssStyleRule styleRule)
-                            {
-                                // Check if the rule contains 'display: none;' and replace it with 'visibility: hidden;'
-                                var displayProperty = styleRule.Style.GetPropertyValue("display");
-                                if (displayProperty == "none")
-                                {
-                                    styleRule.Style.RemoveProperty("display");
-                                    styleRule.Style.SetProperty("visibility", "hidden");
-                                }
-                            }
-                        }
+                        removeVisibilityNoneFromCss(stylesheet);
+                        AdjustPathForImagesEtcReferredInCSS(selectedBook, file, stylesheet);
 
                         // Serialize the modified stylesheet back to a string
                         var modifiedCssContent = stylesheet.ToCss();
@@ -360,7 +354,7 @@ namespace SafariBooksDownload
                         File.WriteAllText(localPath, modifiedCssContent, Encoding.UTF8);
                     }
 
-                    
+
                     if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
                     {
                         PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
@@ -459,6 +453,73 @@ namespace SafariBooksDownload
             return "";
         }
 
+        private static void AdjustPathForImagesEtcReferredInCSS(Book selectedBook, BookFile file, ICssStyleSheet stylesheet)
+        {
+            // update images and make them a relative path
+            foreach (var rule in stylesheet.Rules)
+            {
+                if (rule is ICssStyleRule styleRule)
+                {
+                    // Properties that can contain URLs
+                    string[] propertiesWithUrls = {
+                                        "background",
+                                        "background-image",
+                                        "border-image",
+                                        "content",
+                                        "cursor",
+                                        "list-style-image"
+                                    };
+
+                    // Check each property for URLs
+                    foreach (var propertyName in propertiesWithUrls)
+                    {
+                        var propertyValue = styleRule.Style.GetPropertyValue(propertyName);
+                        if (!string.IsNullOrWhiteSpace(propertyValue) && propertyValue.Contains("url("))
+                        {
+                            var pattern = @"url\(\""(.*?)\""\)";
+                            var match = Regex.Match(propertyValue, pattern);
+                            if (match.Success)
+                            {
+                                string extractedURL = match.Groups[1].Value;
+                                
+                                var updatedPath = GetRelativePath(selectedBook, file.url, extractedURL);
+                                var escapedUpdatedPath = updatedPath.Replace("\\", "\\\\");
+                                var updatedValue = propertyValue.Replace(extractedURL, escapedUpdatedPath);
+                                styleRule.Style.SetProperty(propertyName, updatedValue);
+                                Console.WriteLine($"Found URL in {propertyName}: {propertyValue}");
+                                
+                                
+                            }
+
+                        }
+                    }
+                }
+                else if (rule is ICssImportRule importRule)
+                {
+                    // Handle @import rule
+                    //Console.WriteLine($"Found @import URL: {importRule.Href}");
+                }
+            }
+        }
+
+        private static void removeVisibilityNoneFromCss(ICssStyleSheet stylesheet)
+        {
+            // Iterate over all CSS rules
+            foreach (var rule in stylesheet.Rules)
+            {
+                if (rule is ICssStyleRule styleRule)
+                {
+                    // Check if the rule contains 'display: none;' and replace it with 'visibility: hidden;'
+                    var displayProperty = styleRule.Style.GetPropertyValue("display");
+                    if (displayProperty == "none")
+                    {
+                        styleRule.Style.RemoveProperty("display");
+                        styleRule.Style.SetProperty("visibility", "hidden");
+                    }
+                }
+            }
+        }
+
         private static string GetRelativePath(Book selectedBook, string fromPath, string toPath)
         {
             var fromUri = new Uri(fromPath);
@@ -468,6 +529,7 @@ namespace SafariBooksDownload
                 {
                     if (file.url.EndsWith(toPath)){
                         toPath = file.url;
+                        break;
                     }
                 }
             }

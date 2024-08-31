@@ -7,9 +7,9 @@
     <PublishReadyToRun>false</PublishReadyToRun>
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
     
-    <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+    <!--<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>-->
     
-		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
+		<!--<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>-->
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
     
     
@@ -67,6 +67,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AngleSharp.Css" Version="0.17.0" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.65" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />

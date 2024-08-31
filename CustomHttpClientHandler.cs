@@ -45,7 +45,9 @@ namespace SafariBooksDownload
             try
             {
                 client.DefaultRequestHeaders.Add("Host", new Uri(url).Host);
+              
                 var response = await client.GetAsync(url);
+             
                 UpdateCookies(response);  // Update cookies after the request
                 return response;
             }
