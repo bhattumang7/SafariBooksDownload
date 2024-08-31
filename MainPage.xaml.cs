@@ -132,14 +132,13 @@ namespace SafariBooksDownload
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
-                if (!File.Exists(containeXMLPath))
-                {
-                    var xmlString = """
-                    <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>
-                    """;
-                    xmlString = xmlString.Replace("OEBPS/content.opf", opfPath);
-                    File.WriteAllText(containeXMLPath, xmlString);
-                }
+               
+                var xmlString = """
+                <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>
+                """;
+                xmlString = xmlString.Replace("OEBPS/content.opf", opfPath);
+                File.WriteAllText(containeXMLPath, xmlString);
+               
                 string folderName = Path.GetFileName(localEpubFolder);
                 string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".zip");
                 string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".epub");
@@ -163,7 +162,7 @@ namespace SafariBooksDownload
 
                 await DisplayAlert("Epug generated", epubPath , " ok");
 
-                Directory.Delete(localEpubFolder, recursive: true);
+                //Directory.Delete(localEpubFolder, recursive: true);
 
                 // now lets download the files into oebpsPath folder
                 //await downloadPages(oebpsPath, selectedBook);
@@ -226,8 +225,8 @@ namespace SafariBooksDownload
             // Create a new item element
             XElement newItem = new XElement("item",
                 new XAttribute("id", "newItemId"),
-                new XAttribute("href", "OEBPS/Text/newitem.html"),
-                new XAttribute("media-type", "application/xhtml+xml")
+                new XAttribute("href", filePath),
+                new XAttribute("media-type", "text/css")
             );
 
             // Add the new item to the manifest
@@ -360,7 +359,7 @@ namespace SafariBooksDownload
                             " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
                             $" <title> { selectedBook.title } </title> \n" +
                             "<head>\n" +
-                            "<meta charset=\"utf-8\"> \n" +
+                            "<meta charset=\"utf-8\" /> \n" +
                             "<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
                             $"{extraCSSInfo}\n" +
                             """
@@ -390,7 +389,7 @@ namespace SafariBooksDownload
                               {%- endif -%}
                             </style>
                             """ +
-                            "</style>" +
+                            
                                 "</head>\n" +
                                 $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
                         File.WriteAllText(localPath, pointMessage);
