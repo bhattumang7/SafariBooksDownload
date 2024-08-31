@@ -136,7 +136,7 @@
     display: inline-block;
 }
 
- #sbo-rt-content audio:not([controls]) { display: none; }
+ #sbo-rt-content audio:not([controls]) { visibility: hidden; }
 
 html {
     font-size: 100% !important;
@@ -166,7 +166,7 @@ html {
 
  #sbo-rt-content .guideList,
  #sbo-rt-content .pageList {
-    display: none;
+    visibility: hidden;
 }
 
  #sbo-rt-content section {
@@ -389,7 +389,7 @@ html {
 }
 
  #sbo-rt-content aside + br {
-    display: none;
+    visibility: hidden;
 }
 
  #sbo-rt-content aside > .sidebar {
@@ -712,7 +712,7 @@ html {
  #sbo-rt-content .boxg hr,
  #sbo-rt-content div.sidebar hr,
  #sbo-rt-content div.warning hr {
-    display: none;
+    visibility: hidden;
 }
 
  #sbo-rt-content div.tip img,
@@ -839,7 +839,7 @@ html {
  #sbo-rt-content .bul_hang3 img,
  #sbo-rt-content .hanging-i img,
  #sbo-rt-content .indentbullet img {
-    display: none;
+    visibility: hidden;
 }
 
  #sbo-rt-content .box_title {

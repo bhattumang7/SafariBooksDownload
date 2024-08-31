@@ -1,6 +1,10 @@
 ﻿
 
 
+using AngleSharp.Css.Dom;
+using AngleSharp.Css.Parser;
+using AngleSharp;
+using HtmlAgilityPack;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
 using Microsoft.Maui.Layouts;
@@ -22,6 +26,7 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Xml.Linq;
+using Telerik.Windows.Documents.Spreadsheet.Expressions.Functions;
 
 
 namespace SafariBooksDownload
@@ -224,7 +229,7 @@ namespace SafariBooksDownload
 
             // Create a new item element
             XElement newItem = new XElement("item",
-                new XAttribute("id", "newItemId"),
+                new XAttribute("id", "Oververyowncustomoverrideumang"),
                 new XAttribute("href", filePath),
                 new XAttribute("media-type", "text/css")
             );
@@ -323,10 +328,36 @@ namespace SafariBooksDownload
 
                     if (file.media_type == "text/css")
                     {
-                        string content = File.ReadAllText(localPath);
-                        content.Replace("display: none", "visibility: hidden");
-                        content.Replace("display:none", "visibility: hidden");
-                        File.WriteAllText(localPath, content);
+                        string cssContent = File.ReadAllText(localPath);
+
+                        // Set up AngleSharp configuration for CSS parsing
+                        var config = Configuration.Default.WithCss();
+                        var context = BrowsingContext.New(config);
+                        var parser = context.GetService<ICssParser>();
+
+                        // Parse the CSS content
+                        var stylesheet = parser.ParseStyleSheet(cssContent);
+
+                        // Iterate over all CSS rules
+                        foreach (var rule in stylesheet.Rules)
+                        {
+                            if (rule is ICssStyleRule styleRule)
+                            {
+                                // Check if the rule contains 'display: none;' and replace it with 'visibility: hidden;'
+                                var displayProperty = styleRule.Style.GetPropertyValue("display");
+                                if (displayProperty == "none")
+                                {
+                                    styleRule.Style.RemoveProperty("display");
+                                    styleRule.Style.SetProperty("visibility", "hidden");
+                                }
+                            }
+                        }
+
+                        // Serialize the modified stylesheet back to a string
+                        var modifiedCssContent = stylesheet.ToCss();
+
+                        // Write the modified CSS content back to the file (or another file if needed)
+                        File.WriteAllText(localPath, modifiedCssContent, Encoding.UTF8);
                     }
 
                     
@@ -345,9 +376,9 @@ namespace SafariBooksDownload
                                     selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:9781633439108/files/override_v1.css");
                                     foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
                                     {
-                                        string path = GetRelativePath(file.url, styleSheetURL);
+                                        string path = GetRelativePath(selectedBook, file.url, styleSheetURL);
 
-                                        var adjustedPath = pathAdjuster.AdjustPathsInHtml(styleSheetURL);
+                                    
                                         extraCSSInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
                                     }
 
@@ -355,7 +386,7 @@ namespace SafariBooksDownload
                             }
                         }
 
-                        string adjustedHtml = pathAdjuster.AdjustPathsInHtml(File.ReadAllText(localPath));
+                        string adjustedHtml = File.ReadAllText(localPath);
                         var pointMessage = "<!DOCTYPE html>\n" +
                             "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"" +
                             " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
@@ -397,7 +428,25 @@ namespace SafariBooksDownload
                             
                                 "</head>\n" +
                                 $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
-                        File.WriteAllText(localPath, pointMessage);
+
+                        var htmlDoc = new HtmlDocument();
+                        htmlDoc.LoadHtml(pointMessage);
+                        var imgNodes = htmlDoc.DocumentNode.SelectNodes("//img");
+                        if (imgNodes != null)
+                        {
+                            foreach (var imgNode in imgNodes)
+                            {
+                                var src = imgNode.GetAttributeValue("src", null);
+                                if (src != null)
+                                {
+                                    var relativePath = GetRelativePath(selectedBook, file.url,  src);
+                                    imgNode.SetAttributeValue("src", relativePath);
+                                }
+                            }
+                        }
+                        htmlDoc.Save(localPath);
+
+                        //File.WriteAllText(localPath, pointMessage);
                     }
 
                     Console.WriteLine($"File downloaded and saved to {localPath}");
@@ -410,9 +459,18 @@ namespace SafariBooksDownload
             return "";
         }
 
-        private static string GetRelativePath(string fromPath, string toPath)
+        private static string GetRelativePath(Book selectedBook, string fromPath, string toPath)
         {
             var fromUri = new Uri(fromPath);
+            if (!Uri.IsWellFormedUriString(toPath, UriKind.Absolute))
+            {
+                foreach (var file in selectedBook.fileList)
+                {
+                    if (file.url.EndsWith(toPath)){
+                        toPath = file.url;
+                    }
+                }
+            }
             var toUri = new Uri(toPath);
 
             var relativeUri = fromUri.MakeRelativeUri(toUri);
