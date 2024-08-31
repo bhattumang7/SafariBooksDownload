@@ -2,6 +2,10 @@
 
 
 	<PropertyGroup>
+
+    <!-- win params -->
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
     
     <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
     
@@ -70,6 +74,8 @@
 		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="26.2.11" />
 		<PackageReference Include="Telerik.UI.for.Maui.Trial" Version="7.1.0" />
 	</ItemGroup>
+  
+  <!--Uncomment below for android build-->
   <Target Name="_RemoveLinuxFrameworkReferences" AfterTargets="ProcessFrameworkReferences">
     <ItemGroup>
       <_ProblematicRIDs Include="linux-bionic-arm;linux-bionic-x86" />
