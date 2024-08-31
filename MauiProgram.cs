@@ -15,13 +15,22 @@ namespace SafariBooksDownload
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+                })
+                ;
+            builder.Logging.AddDebug();
+            builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            var app = builder.Build();
+
+            // Register the global exception handler
+            var logger = app.Services.GetRequiredService<ILogger<GlobalExceptionHandler>>();
+            new GlobalExceptionHandler(logger);
+
+            return app;
         }
     }
 }

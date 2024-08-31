@@ -52,6 +52,12 @@ namespace SafariBooksDownload
             downloadLabel.IsVisible = false;
             progressBar.IsVisible = false;
             progressLabel.IsVisible = false;
+
+            if (File.Exists(Config.COOKIES_FILE))
+            {
+                AuthWebView.IsVisible = false;
+                downloadbtn.IsEnabled = true;
+            }
             
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -156,6 +162,8 @@ namespace SafariBooksDownload
                 File.Move(zipPath, epubPath);
 
                 await DisplayAlert("Epug generated", epubPath , " ok");
+
+                Directory.Delete(localEpubFolder, recursive: true);
 
                 // now lets download the files into oebpsPath folder
                 //await downloadPages(oebpsPath, selectedBook);
@@ -564,19 +572,27 @@ namespace SafariBooksDownload
 
         private async void AuthWebView_OnNavigated(object sender, WebNavigatedEventArgs e)
         {
-            if (e.Result == WebNavigationResult.Success)
+            try
             {
-                var webView = sender as WebView;
-                if(e.Url== "https://learning.oreilly.com/profile/")
+                if (e.Result == WebNavigationResult.Success)
                 {
-                    string output = await webView.EvaluateJavaScriptAsync("JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
-                    output = Regex.Unescape(output);
-                    
-                    File.WriteAllText(Config.COOKIES_FILE, output);
-                    webView.IsVisible = false;
-                    downloadbtn.IsEnabled = true;
+                    var webView = sender as WebView;
+                    if (e.Url == "https://learning.oreilly.com/profile/")
+                    {
+                        string output = await webView.EvaluateJavaScriptAsync("JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
+                        output = Regex.Unescape(output);
+
+                        File.WriteAllText(Config.COOKIES_FILE, output);
+                        webView.IsVisible = false;
+                        downloadbtn.IsEnabled = true;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error occured", ex.Message + "\r\n" + ex.StackTrace, " ok");
+            }
+            
         }
 
         private async Task<string> getJsonAsync(String searchContent)

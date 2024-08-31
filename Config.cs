@@ -5,35 +5,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Android.Provider;
+using Android.OS;
+
 
 namespace SafariBooksDownload
 {
+
     internal class Config
     {
-        static Config(){
-            if(DeviceInfo.Current.Platform == DevicePlatform.Android)
-            {
-                var downloadsPath = FileSystem.Current.AppDataDirectory;
-                var epubPath = Path.Combine(downloadsPath, "epub");
 
-                // Create the "epub" directory if it doesn't exist
-                if (!Directory.Exists(epubPath))
-                {
-                    Directory.CreateDirectory(epubPath);
-                }
-            }
-            else if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+#if ANDROID
+        private static string GetDownloadFolderForAndroid10AndAbove()
+        {
+            var docsDirectory = Android.App.Application.Context.GetExternalFilesDir(Android.OS.Environment.DirectoryDownloads);
+            string s = docsDirectory.AbsolutePath;
+            /*string epubPath1 = Path.Combine(s, "/epub/");
+            string filepath = Path.Combine(s, "my.html");*/
+            return s;
+        }
+#endif
+        static Config(){
+
+
+#if ANDROID
+            /*  var downloadsPath = FileSystem.Current.AppDataDirectory;
+              var epubPath = Path.Combine(Android.OS.Environment.StorageDirectory.AbsolutePath, "/epub/");
+
+              // Create the "epub" directory if it doesn't exist
+              if (!Directory.Exists(epubPath))
+              {
+                  Directory.CreateDirectory(epubPath);
+              }
+
+              BooksPath = epubPath;
+              COOKIES_FILE = Path.Combine(epubPath, "cookies.json");*/
+
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
             {
-                BooksPath = @"C:\Umang\NewDownloader\";
+                // Use MediaStore to get the Downloads folder
+                BooksPath = GetDownloadFolderForAndroid10AndAbove();
             }
             else
             {
-                BooksPath = @"C:\Umang\NewDownloader\";
+                // For Android 9 and below, continue using the deprecated method
+                var downloadsPath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads).AbsolutePath;
+                BooksPath = Path.Combine(downloadsPath, "epub");
+
+                if (!Directory.Exists(BooksPath))
+                {
+                    Directory.CreateDirectory(BooksPath);
+                }
             }
-            
+            COOKIES_FILE = Path.Combine(BooksPath, "cookies.json");
+#elif WINDOWS
+                BooksPath = @"C:\Umang\NewDownloader\";
+                COOKIES_FILE = Path.Combine(PATH, "cookies.json");
+#endif
+
         }
+
         private static string pATH = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        public static string COOKIES_FILE = Path.Combine(PATH, "cookies.json");
+        public static string COOKIES_FILE;
         public static string ORLY_BASE_HOST = "oreilly.com";  // Insert URL here
 
         public static string SAFARI_BASE_HOST = "learning." + ORLY_BASE_HOST;
