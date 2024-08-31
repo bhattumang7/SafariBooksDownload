@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Android.Provider;
-using Android.OS;
+
 
 
 namespace SafariBooksDownload
@@ -18,15 +17,25 @@ namespace SafariBooksDownload
 #if ANDROID
         private static string GetDownloadFolderForAndroid10AndAbove()
         {
+         string downloadsPath =  Android.OS.Environment.GetExternalStoragePublicDirectory("download").AbsolutePath;
+         return downloadsPath;
+         /*if(File.Exists(downloadsPath )){
+         var i =  20 ;
+         }
+         if(Directory.Exists(downloadsPath)){
+         var i = 25 ;
+         var myFile = Path.Join(downloadsPath, "my.txt");
+         File.WriteAllText(myFile,"asd");
+         }
             var docsDirectory = Android.App.Application.Context.GetExternalFilesDir(Android.OS.Environment.DirectoryDownloads);
-            string s = docsDirectory.AbsolutePath;
+            string s = docsDirectory.AbsolutePath;*/
             /*string epubPath1 = Path.Combine(s, "/epub/");
             string filepath = Path.Combine(s, "my.html");*/
-            return s;
+           // return s;
         }
 #endif
         static Config(){
-
+           
 
 #if ANDROID
             /*  var downloadsPath = FileSystem.Current.AppDataDirectory;
@@ -41,22 +50,10 @@ namespace SafariBooksDownload
               BooksPath = epubPath;
               COOKIES_FILE = Path.Combine(epubPath, "cookies.json");*/
 
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
-            {
-                // Use MediaStore to get the Downloads folder
-                BooksPath = GetDownloadFolderForAndroid10AndAbove();
-            }
-            else
-            {
-                // For Android 9 and below, continue using the deprecated method
-                var downloadsPath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads).AbsolutePath;
-                BooksPath = Path.Combine(downloadsPath, "epub");
-
-                if (!Directory.Exists(BooksPath))
-                {
-                    Directory.CreateDirectory(BooksPath);
-                }
-            }
+           
+            // Use MediaStore to get the Downloads folder
+            BooksPath = GetDownloadFolderForAndroid10AndAbove();
+          
             COOKIES_FILE = Path.Combine(BooksPath, "cookies.json");
 #elif WINDOWS
                 BooksPath = @"C:\Umang\NewDownloader\";
