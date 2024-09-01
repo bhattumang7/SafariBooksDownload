@@ -40,8 +40,14 @@
                                 <Image Source="{Binding cover_image}" />
                                 <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
                                     <Label Text="{Binding title}" FontSize="Small" LineBreakMode="WordWrap" />
+                                    
                                     <Label Text="{Binding authors}" FontSize="Small" />
-                                    <Label Text="{Binding product_id}" FontSize="Small" />
+                                    <StackLayout Orientation="Horizontal" >
+                                        <Label Text="ID: " FontSize="Small" />
+                                        <Label Text="{Binding product_id}" FontSize="Small" />
+                                        <Label Text="  Publication Date: " FontSize="Small" />
+                                        <Label Text="{Binding publication_date}" FontSize="Small" />
+                                    </StackLayout>
                                 </StackLayout>
                                 <Button Text="Download" Clicked="downloadBook" CommandParameter="{Binding .}" />
                             </StackLayout>

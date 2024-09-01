@@ -25,6 +25,7 @@ namespace SafariBooksDownload
 
         public string flat_toc { get; set; }
         public string files_URL { get; set; }
+        public string publication_date { get; set; }
 
         public List<BookFile> fileList {get;set;}
         public List<JsonNodeInfo> nextedTOC { get; set; }

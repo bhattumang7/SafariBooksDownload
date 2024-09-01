@@ -780,8 +780,8 @@ namespace SafariBooksDownload
                         cover_image = bookEntry.GetProperty("cover_image").GetString(),
                         description = bookEntry.GetProperty("description").GetString(),
                         url = bookEntry.GetProperty("url").GetString(),
-                        authors = string.Join(", ", bookEntry.GetProperty("authors").EnumerateArray().Select(author => author.GetString()))
-
+                        authors = string.Join(", ", bookEntry.GetProperty("authors").EnumerateArray().Select(author => author.GetString())),
+                        publication_date = bookEntry.GetProperty("custom_attributes").GetProperty("publication_date").GetString()
                     };
                     ViewModel.Books.Add(book);
                 }
