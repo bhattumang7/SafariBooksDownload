@@ -1,5 +1,6 @@
 # Gets epub fiels for Kindle from SafariBooks.
 - Utilizes V2 APIs.
+- Search book functionality built right into the application.
 - MAUI project that makes this a multi platform application (I have tested only on windows).
 - Downlads content file in parallel. 
 - Shows a login page to avoid fuss around cookies that is present in most of the other projects.
@@ -10,4 +11,4 @@
 - Does not have the problem of fonts not downloading.
 
 
-Telerik MAUI controls have to be installed for us tto be able to run this.
+Telerik MAUI controls have to be installed for us to be able to run this.
