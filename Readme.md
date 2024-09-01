@@ -10,5 +10,6 @@
 - Corrects/adjusts (to their correct relative path in epub) image paths in css.
 - Does not have the problem of fonts not downloading.
 - Injects "override_v1.css" to every file.
+- Download resumes from where it stopped.
 
 Telerik MAUI controls have to be installed for us to be able to run this.
