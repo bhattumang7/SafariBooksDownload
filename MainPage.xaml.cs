@@ -103,6 +103,7 @@ namespace SafariBooksDownload
 
                 Book selectedBook = (Book)((Button)sender).BindingContext;
                 //await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
+                ViewModel.DownloadProgress.DownloadLabel = selectedBook.title + " (getting details of the book)";
                 ViewModel.DownloadProgress.ProgressLabel = "Getting book details";
                 string _1 = await pupulateBookDetails(selectedBook);
                 //selectedBook.nextedTOC = await getFlatTableOFContent(selectedBook);
@@ -280,7 +281,7 @@ namespace SafariBooksDownload
 
         private async Task<string> DownloadFileAsync(Book selectedBook, List<ChappterInfo> chapters, string localEpubFolder)
         {
-            ViewModel.DownloadProgress.DownloadLabel = "Downloading files for " + selectedBook.title;
+            ViewModel.DownloadProgress.DownloadLabel = selectedBook.title + " (downloading files)";
             int lastPercentage = -1;
             var totalFileCount = selectedBook.fileList.Count;
             int currentFileNo = 1;
@@ -580,6 +581,7 @@ namespace SafariBooksDownload
 
             var jsonDocument = JsonDocument.Parse(stringResponse);
             int totalFilesCount = jsonDocument.RootElement.GetProperty("count").GetInt32();
+            ViewModel.DownloadProgress.DownloadLabel = selectedBook.title + " - (Getting list of files for this book)";
             ViewModel.DownloadProgress.ProgressLabel = "Getting list of files that needs to be dowloaded for " + selectedBook.title;
             MainThread.BeginInvokeOnMainThread(() =>
             {
