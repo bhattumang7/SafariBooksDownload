@@ -286,7 +286,19 @@ namespace SafariBooksDownload
             int currentFileNo = 1;
             foreach (var file in selectedBook.fileList)
             {
-                
+                int percentDone = (currentFileNo * 100) / totalFileCount;
+                if (lastPercentage != percentDone)
+                {
+                    lastPercentage = percentDone;
+                    //await DisplayAlert("percentage", percentDone.ToString(), "ok");
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ViewModel.DownloadProgress.ProgressBarValue = percentDone;
+                        ViewModel.DownloadProgress.ProgressLabel = $"Downloading files. {percentDone} percentage done. ({currentFileNo}/{totalFileCount}) ";
+                    });
+                }
+
+
                 ChappterInfo selectedChapter = null;
                 foreach (var chapter in chapters)
                 {
@@ -303,18 +315,7 @@ namespace SafariBooksDownload
                 // total fileCOunt  100 
                 //Current
               
-                int percentDone = (currentFileNo * 100) / totalFileCount;
-                if (lastPercentage != percentDone)
-                {
-                    lastPercentage = percentDone;
-                    //await DisplayAlert("percentage", percentDone.ToString(), "ok");
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        ViewModel.DownloadProgress.ProgressBarValue = percentDone;
-                        ViewModel.DownloadProgress.ProgressLabel = $"Downloading files. {percentDone} percentage done. ({currentFileNo}/{totalFileCount}) ";
-                    });
-                }
-                    
+             
          
                     
                 var localPath = Path.Join(localEpubFolder, file.full_path);
