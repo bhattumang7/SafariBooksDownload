@@ -284,7 +284,7 @@ namespace SafariBooksDownload
             int lastPercentage = -1;
             var totalFileCount = selectedBook.fileList.Count;
             int currentFileNo = 1;
-            foreach (var file in selectedBook.fileList)
+            foreach (var fileChunk in selectedBook.fileList.Chunk(7))
             {
                 int percentDone = (currentFileNo * 100) / totalFileCount;
                 if (lastPercentage != percentDone)
@@ -297,105 +297,115 @@ namespace SafariBooksDownload
                         ViewModel.DownloadProgress.ProgressLabel = $"Downloading files. {percentDone} percentage done. ({currentFileNo}/{totalFileCount}) ";
                     });
                 }
-
-
-                ChappterInfo selectedChapter = null;
-                foreach (var chapter in chapters)
-                {
-                    if (chapter.content_url == file.url)
-                    {
-                        selectedChapter = chapter;
-                    }
-                }
-                
-            
-                //progress.ProgressBarValue = 0;
-                
-
-                // total fileCOunt  100 
-                //Current
-              
              
-         
-                    
-                var localPath = Path.Join(localEpubFolder, file.full_path);
-                string directoryPath = Path.GetDirectoryName(localPath);
-                if (!Directory.Exists(directoryPath))
+                var downloadTasks = fileChunk.Select(file => downloadSingleFIle(selectedBook, chapters, localEpubFolder, file)).ToList();
+                await Task.WhenAll(downloadTasks);
+
+                currentFileNo += 7;
+
+            }
+            return "";
+        }
+
+        private static async Task downloadSingleFIle(Book selectedBook, List<ChappterInfo> chapters, string localEpubFolder, BookFile file)
+        {
+            ChappterInfo selectedChapter = null;
+            foreach (var chapter in chapters)
+            {
+                if (chapter.content_url == file.url)
                 {
-                    Directory.CreateDirectory(directoryPath);
+                    selectedChapter = chapter;
                 }
-                if (!File.Exists(localPath))
+            }
+
+
+            //progress.ProgressBarValue = 0;
+
+
+            // total fileCOunt  100 
+            //Current
+
+
+
+
+            var localPath = Path.Join(localEpubFolder, file.full_path);
+            string directoryPath = Path.GetDirectoryName(localPath);
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+            if (!File.Exists(localPath))
+            {
+
+                CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
+                HttpResponseMessage response = await customHttpClientHandler.GetAsync(file.url);
+
+                byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+
+
+
+                await File.WriteAllBytesAsync(localPath, fileBytes);
+
+                if (file.media_type == "text/css")
                 {
+                    string cssContent = File.ReadAllText(localPath);
 
-                    CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-                    HttpResponseMessage response = await customHttpClientHandler.GetAsync(file.url);
+                    // Set up AngleSharp configuration for CSS parsing
+                    var config = Configuration.Default.WithCss();
+                    var context = BrowsingContext.New(config);
+                    var parser = context.GetService<ICssParser>();
 
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+                    // Parse the CSS content
+                    var stylesheet = parser.ParseStyleSheet(cssContent);
+                    removeVisibilityNoneFromCss(stylesheet);
+                    AdjustPathForImagesEtcReferredInCSS(selectedBook, file, stylesheet);
+
+                    // Serialize the modified stylesheet back to a string
+                    var modifiedCssContent = stylesheet.ToCss();
+
+                    // Write the modified CSS content back to the file (or another file if needed)
+                    File.WriteAllText(localPath, modifiedCssContent, Encoding.UTF8);
+                }
 
 
+                if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
+                {
+                    PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
+                    String extraCSSInfo = "";
 
-                    await File.WriteAllBytesAsync(localPath, fileBytes);
-
-                    if (file.media_type == "text/css")
+                    if (selectedChapter != null)
                     {
-                        string cssContent = File.ReadAllText(localPath);
-
-                        // Set up AngleSharp configuration for CSS parsing
-                        var config = Configuration.Default.WithCss();
-                        var context = BrowsingContext.New(config);
-                        var parser = context.GetService<ICssParser>();
-
-                        // Parse the CSS content
-                        var stylesheet = parser.ParseStyleSheet(cssContent);
-                        removeVisibilityNoneFromCss(stylesheet);
-                        AdjustPathForImagesEtcReferredInCSS(selectedBook, file, stylesheet);
-
-                        // Serialize the modified stylesheet back to a string
-                        var modifiedCssContent = stylesheet.ToCss();
-
-                        // Write the modified CSS content back to the file (or another file if needed)
-                        File.WriteAllText(localPath, modifiedCssContent, Encoding.UTF8);
-                    }
-
-
-                    if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
-                    {
-                        PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
-                        String extraCSSInfo = "";
-                        
-                        if (selectedChapter != null)
+                        if (selectedChapter.related_assets != null)
                         {
-                            if (selectedChapter.related_assets != null)
+                            if (selectedChapter.related_assets.stylesheets != null && selectedChapter.related_assets.stylesheets.Count > 0)
                             {
-                                if (selectedChapter.related_assets.stylesheets != null && selectedChapter.related_assets.stylesheets.Count > 0)
+
+                                selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" + selectedBook.product_id + "/files/override_v1.css");
+                                foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
                                 {
+                                    string path = GetRelativePath(selectedBook, file.url, styleSheetURL);
 
-                                    selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" +selectedBook.product_id  +  "/files/override_v1.css");
-                                    foreach (var styleSheetURL in selectedChapter.related_assets.stylesheets)
-                                    {
-                                        string path = GetRelativePath(selectedBook, file.url, styleSheetURL);
 
-                                    
-                                        extraCSSInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
-                                    }
-
+                                    extraCSSInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
                                 }
+
                             }
                         }
+                    }
 
-                        string adjustedHtml = File.ReadAllText(localPath);
-                        var pointMessage = "<!DOCTYPE html>\n" +
-                            "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"" +
-                            " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
-                            " xsi:schemaLocation=\"http://www.w3.org/2002/06/xhtml2/" +
-                            " http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd\"" +
-                            " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
-                            $" <title> { selectedBook.title } </title> \n" +
-                            "<head>\n" +
-                            "<meta charset=\"utf-8\" /> \n" +
-                            //"<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
-                            $"{extraCSSInfo}\n" +
-                            """
+                    string adjustedHtml = File.ReadAllText(localPath);
+                    var pointMessage = "<!DOCTYPE html>\n" +
+                        "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"" +
+                        " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                        " xsi:schemaLocation=\"http://www.w3.org/2002/06/xhtml2/" +
+                        " http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd\"" +
+                        " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
+                        $" <title> {selectedBook.title} </title> \n" +
+                        "<head>\n" +
+                        "<meta charset=\"utf-8\" /> \n" +
+                        //"<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
+                        $"{extraCSSInfo}\n" +
+                        """
                                                         <style type="text/css">
                               body {
                                 margin: 1em;
@@ -422,38 +432,34 @@ namespace SafariBooksDownload
                               {%- endif -%}
                             </style>
                             """ +
-                            
-                                "</head>\n" +
-                                $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
 
-                        var htmlDoc = new HtmlDocument();
-                        htmlDoc.LoadHtml(pointMessage);
-                        var imgNodes = htmlDoc.DocumentNode.SelectNodes("//img");
-                        if (imgNodes != null)
+                            "</head>\n" +
+                            $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
+
+                    var htmlDoc = new HtmlDocument();
+                    htmlDoc.LoadHtml(pointMessage);
+                    var imgNodes = htmlDoc.DocumentNode.SelectNodes("//img");
+                    if (imgNodes != null)
+                    {
+                        foreach (var imgNode in imgNodes)
                         {
-                            foreach (var imgNode in imgNodes)
+                            var src = imgNode.GetAttributeValue("src", null);
+                            if (src != null)
                             {
-                                var src = imgNode.GetAttributeValue("src", null);
-                                if (src != null)
-                                {
-                                    var relativePath = GetRelativePath(selectedBook, file.url,  src);
-                                    imgNode.SetAttributeValue("src", relativePath);
-                                }
+                                var relativePath = GetRelativePath(selectedBook, file.url, src);
+                                imgNode.SetAttributeValue("src", relativePath);
                             }
                         }
-                        htmlDoc.Save(localPath);
-
-                        //File.WriteAllText(localPath, pointMessage);
                     }
+                    htmlDoc.Save(localPath);
 
-                    Console.WriteLine($"File downloaded and saved to {localPath}");
+                    //File.WriteAllText(localPath, pointMessage);
+                }
+
+                Console.WriteLine($"File downloaded and saved to {localPath}");
 
 
-                } 
-                ++currentFileNo;
-            
             }
-            return "";
         }
 
         private static void AdjustPathForImagesEtcReferredInCSS(Book selectedBook, BookFile file, ICssStyleSheet stylesheet)
