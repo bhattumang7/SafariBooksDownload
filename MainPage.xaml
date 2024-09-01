@@ -32,18 +32,18 @@
             <Label x:Name="progressLabel" Text="{Binding DownloadProgress.ProgressLabel}" />
 
             <ListView x:Name="booksListView" ItemsSource="{Binding Books}">
-                <ListView.RowHeight>120</ListView.RowHeight>
+                <ListView.RowHeight>250</ListView.RowHeight>
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="local:Book">
                         <ViewCell>
-                            <StackLayout x:Name="itemLayout" Orientation="Horizontal" WidthRequest="300" HeightRequest="250" VerticalOptions="Fill" HorizontalOptions="Fill">
-                                <Image Source="{Binding cover_image}" HeightRequest="100" WidthRequest="100" />
+                            <StackLayout x:Name="itemLayout" Orientation="Horizontal" VerticalOptions="Fill" HorizontalOptions="Fill">
+                                <Image Source="{Binding cover_image}" />
                                 <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-                                    <Label Text="{Binding title}" FontSize="Large" LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding title}" FontSize="Small" LineBreakMode="WordWrap" />
                                     <Label Text="{Binding authors}" FontSize="Small" />
                                     <Label Text="{Binding product_id}" FontSize="Small" />
                                 </StackLayout>
-                                <Button Text="Download" Clicked="downloadBook" CommandParameter="{Binding .}" HeightRequest="80"/>
+                                <Button Text="Download" Clicked="downloadBook" CommandParameter="{Binding .}" />
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>
