@@ -15,17 +15,19 @@ namespace SafariBooksDownload
         {
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
+                #if ANDROID
                 // Check if the Android version requires runtime permissions
-                if ((int)Build.VERSION.SdkInt >= (int)BuildVersionCodes.M)
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
                 {
                     // Android 6.0 (API 23) and above requires requesting runtime permissions
                     await RequestRuntimePermissions();
                 }
                 else
                 {
-                    // Older versions (Android 5.1 and below) - Permissions are granted at install time
+                    // For Android versions before 6.0 (API 23), permissions are granted at install time
                     Console.WriteLine("Permissions granted by default on older Android versions.");
                 }
+                #endif
             }
         }
 
