@@ -133,7 +133,7 @@ namespace SafariBooksDownload
                 ViewModel.DownloadProgress.ProgressLabel = "Fetching chapter list";
                 List<ChappterInfo> chapters = await fetchChapterInfo(selectedBook);
 
-                var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.getTitle_file_name_safe());
+                var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.product_id);
 
 
                 progress.ProgressBarValue = 0;
@@ -164,8 +164,8 @@ namespace SafariBooksDownload
                 File.WriteAllText(containeXMLPath, xmlString);
                
                 string folderName = Path.GetFileName(localEpubFolder);
-                string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".zip");
-                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), folderName + ".epub");
+                string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.getTitle_file_name_safe() + ".zip");
+                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.getTitle_file_name_safe() + ".epub");
 
 
                 progress.DownloadLabel = "Generating epub";
