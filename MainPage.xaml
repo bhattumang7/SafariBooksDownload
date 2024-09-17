@@ -31,60 +31,30 @@
                                       TrackCornerRadius="5" />
             <Label x:Name="progressLabel" Text="{Binding DownloadProgress.ProgressLabel}" />
          
-
-            <CollectionView x:Name="booksListView" ItemsSource="{Binding Books}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:Book">
-                        <ViewCell>
-                            <Grid Padding="10" RowSpacing="5" ColumnSpacing="10">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100" /> <!-- Image column -->
-                                    <ColumnDefinition Width="*" />   <!-- Text and Button column -->
-                                </Grid.ColumnDefinitions>
-            
-                                <!-- Book cover image -->
-                                <Image Grid.RowSpan="2"
-                                       Grid.Column="0"
-                                       WidthRequest="100"
-                                       HeightRequest="150"
-                                       Aspect="AspectFit">
-                                    <Image.Behaviors>
-                                        <local:LazyLoadBehavior Source="{Binding cover_image}" />
-                                    </Image.Behaviors>
-                                </Image>
-            
-                                <!-- Book details -->
-                                <StackLayout Grid.Column="1" Spacing="5">
-                                    <Label Text="{Binding title}" FontSize="Medium" LineBreakMode="WordWrap" />
-                                    <Label Text="{Binding authors}" FontSize="Small" />
-                                    <StackLayout Orientation="Horizontal" Spacing="5">
-                                        <Label Text="ID: " FontSize="Small" />
-                                        <Label Text="{Binding product_id}" FontSize="Small" />
-                                    </StackLayout>
-                                    <StackLayout Orientation="Horizontal" Spacing="5">
-                                        <Label Text="Publication Date: " FontSize="Small" />
-                                        <Label Text="{Binding publication_date}" FontSize="Small" />
-                                    </StackLayout>
-                                </StackLayout>
-            
-                                <!-- Download Button -->
-                                <Button Grid.Row="1"
-                                        Grid.Column="1"
-                                        HorizontalOptions="End"
-                                        VerticalOptions="Center"
-                                        Text="Download"
-                                        Clicked="downloadBook"
-                                        CommandParameter="{Binding .}" />
-                            </Grid>
-                        </ViewCell>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
+            <ListView x:Name="booksListView" ItemsSource="{Binding Books}">
+                  <ListView.RowHeight>250</ListView.RowHeight>
+                  <ListView.ItemTemplate>
+                      <DataTemplate x:DataType="local:Book">
+                          <ViewCell>
+                              <StackLayout x:Name="itemLayout" Orientation="Horizontal" VerticalOptions="Fill" HorizontalOptions="Fill">
+                                  <Image Source="{Binding cover_image}" />
+                                  <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                                      <Label Text="{Binding title}" FontSize="Small" LineBreakMode="WordWrap" />
+  
+                                      <Label Text="{Binding authors}" FontSize="Small" />
+                                      <StackLayout Orientation="Horizontal" >
+                                          <Label Text="ID: " FontSize="Small" />
+                                          <Label Text="{Binding product_id}" FontSize="Small" />
+                                          <Label Text="  Publication Date: " FontSize="Small" />
+                                          <Label Text="{Binding publication_date}" FontSize="Small" />
+                                      </StackLayout>
+                                  </StackLayout>
+                                  <Button Text="Download" Clicked="downloadBook" CommandParameter="{Binding .}" />
+                              </StackLayout>
+                          </ViewCell>
+                      </DataTemplate>
+                  </ListView.ItemTemplate>
+              </ListView>
 
         </VerticalStackLayout>
     </ScrollView>
