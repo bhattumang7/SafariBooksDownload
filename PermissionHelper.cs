@@ -19,7 +19,21 @@ namespace SafariBooksDownload
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
                 #if ANDROID
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Permission Request", "Version greater than R", "OK");
+                    var result = Android.OS.Environment.IsExternalStorageManager;
+                    if (!result)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Permission Request", "IsExternalStorageManager true", "OK");
+                        var manage = Settings.ActionManageAppAllFilesAccessPermission;
+                        Intent intent = new Intent(manage);
+                        Android.Net.Uri uri = Android.Net.Uri.Parse("package:" + AppInfo.Current.PackageName);
+                        intent.SetData(uri);
+                        Platform.CurrentActivity.StartActivity(intent);
+                    }
+                    return result;
+                } else if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
                 {
                     // Show alert before requesting permissions
                     await Application.Current.MainPage.DisplayAlert("Permission Request", "Requesting storage permissions...", "OK");
