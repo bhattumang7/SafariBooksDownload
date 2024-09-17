@@ -1,5 +1,5 @@
 name: Build .NET MAUI Windows
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: Build on GitHub Actions 🚀
 on: [push]
 jobs:
   Windows-Build:
