@@ -32,7 +32,7 @@
             <Label x:Name="progressLabel" Text="{Binding DownloadProgress.ProgressLabel}" />
          
 
-            <CollectionView x:Name="booksCollectionView" ItemsSource="{Binding Books}">
+            <CollectionView x:Name="booksListView" ItemsSource="{Binding Books}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="local:Book">
                         <ViewCell>
