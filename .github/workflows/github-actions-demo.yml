@@ -20,6 +20,12 @@ jobs:
       - run: echo "MAUI workload is installed now"
       - name: Restore
         run: dotnet restore
+      - name: Publish
+        run: dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          path: .\**\AppPackages\**\*.*
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
