@@ -65,6 +65,18 @@ namespace SafariBooksDownload
             }*/
             
         }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+        
+            var hasPermission = await PermissionHelper.RequestStoragePermissions();
+        
+            if (!hasPermission)
+            {
+                await DisplayAlert("Permission Required", "Storage access is required to proceed.", "OK");
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
