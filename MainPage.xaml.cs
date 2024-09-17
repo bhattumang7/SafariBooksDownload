@@ -164,8 +164,8 @@ namespace SafariBooksDownload
                 File.WriteAllText(containeXMLPath, xmlString);
                
                 string folderName = Path.GetFileName(localEpubFolder);
-                string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.getTitle_file_name_safe() + ".zip");
-                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.getTitle_file_name_safe() + ".epub");
+                string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".zip");
+                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),selectedBook.product_id + ".epub");
 
 
                 progress.DownloadLabel = "Generating epub";
