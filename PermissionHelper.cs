@@ -1,4 +1,6 @@
 using Android;
+using Android.Content;                    // For Intent and other context-related classes
+using Android.Provider;                   // For Settings.ActionManageAppAllFilesAccessPermission
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.Content;
