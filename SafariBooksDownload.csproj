@@ -4,16 +4,17 @@
 	<PropertyGroup>
 
     <!-- win params -->
+    <!-- 
     <PublishReadyToRun>true</PublishReadyToRun>
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-    
+     -->
     
     
 		<!--<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>-->
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
 
-    <!--<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
-    <TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>-->
+    <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+    <TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
     
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		 <!--<TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks>--> 
@@ -84,10 +85,10 @@
 	</ItemGroup>
   
   <!--Uncomment below for android build-->
-  <!--<Target Name="_RemoveLinuxFrameworkReferences" AfterTargets="ProcessFrameworkReferences">
+  <Target Name="_RemoveLinuxFrameworkReferences" AfterTargets="ProcessFrameworkReferences">
     <ItemGroup>
       <_ProblematicRIDs Include="linux-bionic-arm;linux-bionic-x86" />
       <PackageDownload Remove="Microsoft.NETCore.App.Runtime.%(_ProblematicRIDs.Identity)" />
     </ItemGroup>
-  </Target>-->
+  </Target>
 </Project>
