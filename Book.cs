@@ -35,7 +35,7 @@ namespace SafariBooksDownload
         public String table_of_contents { get; set; }
         public string getTitle_file_name_safe()
         {
-            return string.Join("_", title.Split(Path.GetInvalidFileNameChars()));
+            return string.Join("_", title.Split(Path.GetInvalidPathChars()));
         }
 
     
