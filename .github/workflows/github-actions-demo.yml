@@ -14,7 +14,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: echo "DotNet is installed and ready to run."
+      - name: Install MAUI workload
+        run: dotnet workload install maui
+      - run: echo "MAUI workload is installed now"
+      - name: Restore
+        run: dotnet restore
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
