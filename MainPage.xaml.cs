@@ -171,6 +171,10 @@ namespace SafariBooksDownload
                 progress.DownloadLabel = "Generating epub";
                 progress.ProgressBarValue = 10;
                 progress.ProgressLabel = "Creating zip";
+                if (File.Exists(zipPath))
+                {
+                    File.Delete(zipPath);
+                }
                 // Create zip file
                 ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
 
