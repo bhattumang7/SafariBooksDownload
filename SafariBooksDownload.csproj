@@ -77,7 +77,6 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="26.2.11" />
-		<PackageReference Include="Telerik.UI.for.Maui.Trial" Version="7.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
