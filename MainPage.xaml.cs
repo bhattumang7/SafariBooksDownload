@@ -169,7 +169,7 @@ namespace SafariBooksDownload
 
 
                 progress.DownloadLabel = "Generating epub";
-                progress.ProgressBarValue = 10;
+                progress.ProgressBarValue = 10/100;
                 progress.ProgressLabel = "Creating zip";
                 if (File.Exists(zipPath))
                 {
@@ -178,7 +178,7 @@ namespace SafariBooksDownload
                 // Create zip file
                 ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
 
-                progress.ProgressBarValue = 30;
+                progress.ProgressBarValue = 30/100;
                 progress.ProgressLabel = "Creating epub";
 
                 if (File.Exists(epubPath))
@@ -328,7 +328,7 @@ namespace SafariBooksDownload
                     //await DisplayAlert("percentage", percentDone.ToString(), "ok");
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        ViewModel.DownloadProgress.ProgressBarValue = percentDone;
+                        ViewModel.DownloadProgress.ProgressBarValue = percentDone/100;
                         ViewModel.DownloadProgress.ProgressLabel = $"Downloading files. {percentDone} percentage done. ({currentFileNo}/{totalFileCount}) ";
                     });
                 }
@@ -664,7 +664,7 @@ namespace SafariBooksDownload
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 ViewModel.DownloadProgress.ProgressLabel = $"Total {totalFilesCount} files found. {++downloaded} of {pageCount} page's information fetched.";
-                ViewModel.DownloadProgress.ProgressBarValue = percentageDone;
+                ViewModel.DownloadProgress.ProgressBarValue = percentageDone / 100;
             });
             
             if (jsonDocument.RootElement.TryGetProperty("next", out JsonElement next))
