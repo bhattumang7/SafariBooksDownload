@@ -16,21 +16,19 @@
 
             </HorizontalStackLayout>
 
-            <Label x:Name="searchingLabel" IsVisible="{Binding searchInProgress}"  Text="Searching for books" />
-            <telerik:RadLinearProgressBar IsVisible="{Binding searchInProgress}"  x:Name="seachingProgressbar"  Value="25"
-                              SegmentCount="10"
-                              SegmentSeparatorFill="Black"
-                              SegmentSeparatorThickness="2" />
+            <Label x:Name="searchingLabel" IsVisible="{Binding searchInProgress}" Text="Searching for books" />
+            <ProgressBar IsVisible="{Binding searchInProgress}" x:Name="searchingProgressBar" 
+             Progress="0.25" HeightRequest="20" />
 
-            <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" Navigated="AuthWebView_OnNavigated" />
+            <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" 
+         Navigated="AuthWebView_OnNavigated" />
 
             <Label x:Name="downloadLabel" Text="{Binding DownloadProgress.DownloadLabel}" />
-            <telerik:RadLinearProgressBar x:Name="progressBar" Value="{Binding DownloadProgress.ProgressBarValue}"
-                                      HeightRequest="20"
-                                      ProgressCornerRadius="5"
-                                      TrackCornerRadius="5" />
+            <ProgressBar x:Name="progressBar" Progress="{Binding DownloadProgress.ProgressBarValue}" 
+             HeightRequest="20" />
             <Label x:Name="progressLabel" Text="{Binding DownloadProgress.ProgressLabel}" />
-         
+
+
             <ListView x:Name="booksListView" ItemsSource="{Binding Books}">
                   <ListView.RowHeight>250</ListView.RowHeight>
                   <ListView.ItemTemplate>
