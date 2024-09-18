@@ -8,8 +8,18 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
+      # Cache .NET workload installation
+      - name: Cache .NET Workload
+        uses: actions/cache@v3
+        with:
+          path: C:/Users/runneradmin/AppData/Local/dotnet
+          key: ${{ runner.os }}-dotnet-workload-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-workload-
+      
       - name: Install MAUI workload
         run: dotnet workload install maui
+      
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Restore
@@ -31,8 +41,18 @@ jobs:
         with:
           dotnet-version: 8.x
       - run: echo "DotNet is installed and ready to run."
+      # Cache .NET workload installation
+      - name: Cache .NET Workload
+        uses: actions/cache@v3
+        with:
+          path: C:/Users/runneradmin/AppData/Local/dotnet
+          key: ${{ runner.os }}-dotnet-workload-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-dotnet-workload-
+      
       - name: Install MAUI workload
         run: dotnet workload install maui
+      
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Restore
