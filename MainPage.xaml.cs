@@ -188,6 +188,18 @@ namespace SafariBooksDownload
                 // Rename zip file to .epub
                 File.Move(zipPath, epubPath);
 
+                // attempt to rename the file to a better name if it works. If not, let's use the older name. 
+                try
+                {
+                    string newEpubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.getTitle_file_name_safe() + ".epub");
+                    File.Move(epubPath, newEpubPath);
+                    epubPath = newEpubPath; // Update epubPath to the new name if successful
+                }
+                catch (Exception ex)
+                {
+                    // do not do anything. we keep using the older path
+                }
+
                 await DisplayAlert("Epug generated", epubPath , " ok");
 
                 Directory.Delete(localEpubFolder, recursive: true);
