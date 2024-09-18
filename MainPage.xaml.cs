@@ -8,7 +8,6 @@ using HtmlAgilityPack;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
 using Microsoft.Maui.Layouts;
-using SkiaSharp;
 using Syncfusion.Maui.Core.Carousel;
 using System;
 using System.Collections.Generic;
@@ -26,7 +25,6 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Xml.Linq;
-using Telerik.Windows.Documents.Spreadsheet.Expressions.Functions;
 
 
 namespace SafariBooksDownload
@@ -592,16 +590,6 @@ namespace SafariBooksDownload
             return Uri.UnescapeDataString(relativeUri.ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
 
-        private byte[] OptimizeImage(byte[] imageBytes)
-        {
-            using var inputStream = new MemoryStream(imageBytes);
-            using var original = SKBitmap.Decode(inputStream);
-            using var resizedImage = original.Resize(new SKImageInfo(original.Width / 2, original.Height / 2), SKFilterQuality.High);
-            using var image = SKImage.FromBitmap(resizedImage);
-            using var outputStream = new MemoryStream();
-            image.Encode(SKEncodedImageFormat.Jpeg, 75).SaveTo(outputStream);
-            return outputStream.ToArray();
-        }
         private async Task<String> parepareListOFFiles(Book selectedBook)
         {
             string requestURL = selectedBook.files_URL;
