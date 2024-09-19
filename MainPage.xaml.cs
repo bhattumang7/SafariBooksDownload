@@ -88,6 +88,12 @@ namespace SafariBooksDownload
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        
+        private void OnSearchTextCompleted(object sender, EventArgs e)
+        {
+            downloadbtn.SendClicked();
+        }
+
         private async void OnSearchButtonClick(object sender, EventArgs e)
         {
             // Handle button click here
