@@ -210,7 +210,7 @@ namespace SafariBooksDownload
                 }
 
                 await DisplayAlert("Epug generated", epubPath , " ok");
-
+                await DisplayAlert("local folder path", localEpubFolder, " ok");
                 //Directory.Delete(localEpubFolder, recursive: true);
 
                 // now lets download the files into oebpsPath folder
