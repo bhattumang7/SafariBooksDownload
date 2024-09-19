@@ -44,11 +44,11 @@ namespace SafariBooksDownload
             progressBar.IsVisible = false;
             progressLabel.IsVisible = false;
 
-            if (File.Exists(Config.COOKIES_FILE))
+            /*if (File.Exists(Config.COOKIES_FILE))
             {
                 AuthWebView.IsVisible = false;
                 downloadbtn.IsEnabled = true;
-            }
+            }*/
             
         }
 
