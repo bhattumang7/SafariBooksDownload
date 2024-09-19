@@ -1,3 +1,4 @@
+#if ANDROID
 using Android;
 using Android.Content;                    // For Intent and other context-related classes
 using Android.Provider;                   // For Settings.ActionManageAppAllFilesAccessPermission
@@ -5,6 +6,7 @@ using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.Content;
 using AndroidX.Core.App;
+#endif
 using Microsoft.Maui.ApplicationModel;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
@@ -20,7 +22,7 @@ namespace SafariBooksDownload
         {
             if (DeviceInfo.Platform == DevicePlatform.Android)
             {
-                #if ANDROID
+#if ANDROID
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
                 {
                     var result = Android.OS.Environment.IsExternalStorageManager;
@@ -45,7 +47,7 @@ namespace SafariBooksDownload
                     await Application.Current.MainPage.DisplayAlert("Permissions Granted", "Permissions are granted by default on Android versions older than 6.0.", "OK");
                     return true; // Permissions assumed to be granted for versions below Android 6.0
                 }
-                #endif
+#endif
             }
 
             // If not Android, no need to request permissions
@@ -55,6 +57,7 @@ namespace SafariBooksDownload
 
         private static async Task<bool> RequestRuntimePermissions()
         {
+#if ANDROID
             var readPermissionStatus = ContextCompat.CheckSelfPermission(Platform.CurrentActivity, Manifest.Permission.ReadExternalStorage);
             var writePermissionStatus = ContextCompat.CheckSelfPermission(Platform.CurrentActivity, Manifest.Permission.WriteExternalStorage);
 
@@ -78,11 +81,13 @@ namespace SafariBooksDownload
 
             // Inform user that permissions are already granted
             await Application.Current.MainPage.DisplayAlert("Permissions Granted", "Storage permissions are already granted.", "OK");
+#endif
             return true;
         }
-
+#if ANDROID
         public static async void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
+
             if (requestCode == RequestCode)
             {
                 bool allGranted = true;
@@ -111,5 +116,8 @@ namespace SafariBooksDownload
                 permissionTcs?.SetResult(allGranted);
             }
         }
+#endif
+
     }
+
 }
