@@ -12,9 +12,10 @@
             <HorizontalStackLayout>
                 <Entry x:Name="bookName" Text="9781633439108" Completed="OnSearchTextCompleted" Placeholder="Enter book name here" WidthRequest="200" />
                 <Button x:Name="downloadbtn" Text="Search book" Clicked="OnSearchButtonClick" />
-
+                <Label VerticalOptions="CenterAndExpand" x:Name="RetainFolderLaben" Text="Retain Folders" />
+                <Switch x:Name="RetainFolder" IsToggled="{Binding RetainFolder}"/>
             </HorizontalStackLayout>
-
+            
             <Label x:Name="searchingLabel" IsVisible="{Binding searchInProgress}" Text="Searching for books" />
             <ActivityIndicator IsVisible="{Binding searchInProgress}" IsRunning="{Binding searchInProgress}" />
 

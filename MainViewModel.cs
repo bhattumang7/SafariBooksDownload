@@ -14,6 +14,21 @@ namespace SafariBooksDownload
         public DownloadViewModel DownloadProgress { get; set; }
         private bool _searchInProgress { get; set; }
 
+        private bool _RetainFolder;
+
+        public bool RetainFolder
+        {
+            get => _RetainFolder;
+            set
+            {
+                if (_RetainFolder != value)
+                {
+                    _RetainFolder = value;
+                    OnPropertyChanged(nameof(RetainFolder));
+                }
+            }
+        }
+
         public bool searchInProgress
         {
             get => _searchInProgress;

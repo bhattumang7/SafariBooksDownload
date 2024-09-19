@@ -5,23 +5,10 @@ using AngleSharp.Css.Dom;
 using AngleSharp.Css.Parser;
 using AngleSharp;
 using HtmlAgilityPack;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific;
-using Microsoft.Maui.Layouts;
-using Syncfusion.Maui.Core.Carousel;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics.Metrics;
 using System.IO.Compression;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using System.Xml.Linq;
@@ -47,6 +34,7 @@ namespace SafariBooksDownload
             progress = new DownloadViewModel();
             //BindingContext = this;
             ViewModel = new MainViewModel();
+            ViewModel.RetainFolder = false;
             //ViewModel.Books = new ObservableCollection<Book>();
             BindingContext = ViewModel;
             downloadbtn.IsEnabled = false;
@@ -211,7 +199,11 @@ namespace SafariBooksDownload
                 }
 
                 await DisplayAlert("Epug generated", epubPath , " ok");
-                Directory.Delete(localEpubFolder, recursive: true);
+
+                if(!ViewModel.RetainFolder)
+                {
+                    Directory.Delete(localEpubFolder, recursive: true);
+                }
 
                 // now lets download the files into oebpsPath folder
                 //await downloadPages(oebpsPath, selectedBook);
