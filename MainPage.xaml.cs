@@ -101,6 +101,7 @@ namespace SafariBooksDownload
             try
             {
                 ViewModel.searchInProgress = true;
+                ViewModel.Books.Clear();
                 var searchTerm = bookName.Text;
                 await getJsonAsync(searchTerm);
                 ViewModel.searchInProgress = false;
