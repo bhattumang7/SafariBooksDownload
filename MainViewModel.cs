@@ -22,7 +22,7 @@ namespace SafariBooksDownload
                 if (_searchInProgress != value)
                 {
                     _searchInProgress = value;
-                    OnPropertyChanged(nameof(_searchInProgress));
+                    OnPropertyChanged(nameof(searchInProgress));
                 }
             }
         }
