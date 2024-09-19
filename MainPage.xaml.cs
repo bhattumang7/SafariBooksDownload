@@ -200,7 +200,7 @@ namespace SafariBooksDownload
 
                 await DisplayAlert("Epug generated", epubPath , " ok");
 
-                Directory.Delete(localEpubFolder, recursive: true);
+                //Directory.Delete(localEpubFolder, recursive: true);
 
                 // now lets download the files into oebpsPath folder
                 //await downloadPages(oebpsPath, selectedBook);
@@ -314,12 +314,12 @@ namespace SafariBooksDownload
         private async Task<string> DownloadFileAsync(Book selectedBook, List<ChappterInfo> chapters, string localEpubFolder)
         {
             ViewModel.DownloadProgress.DownloadLabel = selectedBook.title + " (downloading files)";
-            int lastPercentage = -1;
+            double lastPercentage = -1;
             var totalFileCount = selectedBook.fileList.Count;
             int currentFileNo = 1;
             foreach (var fileChunk in selectedBook.fileList.Chunk(7))
             {
-                int percentDone = (currentFileNo * 100) / totalFileCount;
+                double percentDone = (currentFileNo * 100) / totalFileCount;
                 if (lastPercentage != percentDone)
                 {
                     lastPercentage = percentDone;
