@@ -16,8 +16,7 @@
             </HorizontalStackLayout>
 
             <Label x:Name="searchingLabel" IsVisible="{Binding searchInProgress}" Text="Searching for books" />
-            <ProgressBar IsVisible="{Binding searchInProgress}" x:Name="searchingProgressBar" 
-             Progress="0.25" HeightRequest="20" />
+            <ActivityIndicator IsVisible="{Binding searchInProgress}" IsRunning="{Binding searchInProgress}" />
 
             <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" 
          Navigated="AuthWebView_OnNavigated" />
