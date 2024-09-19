@@ -190,11 +190,12 @@ namespace SafariBooksDownload
                 try
                 {
                     string newEpubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.getTitle_file_name_safe() + ".epub");
-                    File.Move(epubPath, newEpubPath);
                     if (File.Exists(newEpubPath))
                     {
                         File.Delete(newEpubPath);
                     }
+                    File.Move(epubPath, newEpubPath);
+           
                     epubPath = newEpubPath; // Update epubPath to the new name if successful
                 }
                 catch (Exception ex)
@@ -204,7 +205,7 @@ namespace SafariBooksDownload
 
                 await DisplayAlert("Epug generated", epubPath , " ok");
 
-                //Directory.Delete(localEpubFolder, recursive: true);
+                Directory.Delete(localEpubFolder, recursive: true);
 
                 // now lets download the files into oebpsPath folder
                 //await downloadPages(oebpsPath, selectedBook);
