@@ -17,7 +17,7 @@ namespace SafariBooksDownload
 #if ANDROID
         private static string GetDownloadFolderForAndroid10AndAbove()
         {
-         string downloadsPath =  Android.OS.Environment.GetExternalStoragePublicDirectory("download").AbsolutePath;
+         string downloadsPath =  Android.OS.Environment.GetExternalStoragePublicDirectory("Download").AbsolutePath;
          return downloadsPath;
          /*if(File.Exists(downloadsPath )){
          var i =  20 ;
