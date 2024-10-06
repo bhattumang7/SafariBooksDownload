@@ -139,20 +139,20 @@ namespace SafariBooksDownload
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
-               
+
                 var xmlString = """
                 <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>
                 """;
                 xmlString = xmlString.Replace("OEBPS/content.opf", opfPath);
                 File.WriteAllText(containeXMLPath, xmlString);
-               
+
                 string folderName = Path.GetFileName(localEpubFolder);
                 string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".zip");
-                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),selectedBook.product_id + ".epub");
+                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".epub");
 
 
                 progress.DownloadLabel = "Generating epub";
-                progress.ProgressBarValue = 10/100;
+                progress.ProgressBarValue = 10 / 100;
                 progress.ProgressLabel = "Creating zip";
                 if (File.Exists(zipPath))
                 {
@@ -161,7 +161,7 @@ namespace SafariBooksDownload
                 // Create zip file
                 ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
 
-                progress.ProgressBarValue = 30/100;
+                progress.ProgressBarValue = 30 / 100;
                 progress.ProgressLabel = "Creating epub";
 
                 if (File.Exists(epubPath))
@@ -180,7 +180,7 @@ namespace SafariBooksDownload
                         File.Delete(newEpubPath);
                     }
                     File.Move(epubPath, newEpubPath);
-           
+
                     epubPath = newEpubPath; // Update epubPath to the new name if successful
                 }
                 catch (Exception ex)
@@ -188,17 +188,14 @@ namespace SafariBooksDownload
                     // do not do anything. we keep using the older path
                 }
 
-                await DisplayAlert("Epug generated", epubPath , " ok");
+                await DisplayAlert("Epug generated", epubPath, " ok");
 
-                if(!ViewModel.RetainFolder)
+                if (!ViewModel.RetainFolder)
                 {
                     Directory.Delete(localEpubFolder, recursive: true);
                 }
 
-                progressBar.IsVisible = false;
-                downloadLabel.IsVisible = false;
-                progressLabel.IsVisible = false;
-                booksListView.IsVisible = true;
+                enableBookList();
             }
             catch (Exception exception)
             {
@@ -208,6 +205,14 @@ namespace SafariBooksDownload
                 booksListView.IsVisible = true;
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace , " ok");
             }
+        }
+
+        private void enableBookList()
+        {
+            progressBar.IsVisible = false;
+            downloadLabel.IsVisible = false;
+            progressLabel.IsVisible = false;
+            booksListView.IsVisible = true;
         }
 
         private static string getOpfFileFullPathFromBook(List<BookFile> listBookFiles)
