@@ -9,6 +9,8 @@
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
+            
+            <!-- search buttons -->
             <HorizontalStackLayout>
                 <Entry x:Name="bookName" Text="" Completed="OnSearchTextCompleted" Placeholder="Enter book name here" WidthRequest="200" />
                 <Button x:Name="downloadbtn" Text="Search book" Clicked="OnSearchButtonClick" />
@@ -18,6 +20,7 @@
                 <Switch x:Name="RetainFolder" IsToggled="{Binding RetainFolder}"/>
             </StackLayout>
 
+            <!-- search progressbars -->
             <Label x:Name="searchingLabel" IsVisible="{Binding searchInProgress}" Text="Searching for books" />
             <ActivityIndicator IsVisible="{Binding searchInProgress}" IsRunning="{Binding searchInProgress}" />
 
@@ -25,6 +28,7 @@
             <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" 
                 Navigated="AuthWebView_OnNavigated" />
 
+            <!-- download in progress progress bar-->
             <Label x:Name="downloadLabel" Text="{Binding DownloadProgress.DownloadLabel}" />
             <ProgressBar x:Name="progressBar" Progress="{Binding DownloadProgress.ProgressBarValue}" 
              HeightRequest="20" />
