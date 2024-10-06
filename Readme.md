@@ -15,7 +15,7 @@
 
 Here are some screen clippings: 
 Here is how the Search screen looks like: 
-![Search Screen](./Search_screen.jpg width="200")
+<img src="./Search_screen.jpg" alt="Search Screen" width="200">
 
 Here is how the download progress screen looks like: 
 ![Dwonlaod Progress Screen](./Dwonload_progress.jpg width="200")
