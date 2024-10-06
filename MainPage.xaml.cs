@@ -188,14 +188,14 @@ namespace SafariBooksDownload
                     // do not do anything. we keep using the older path
                 }
 
-                await DisplayAlert("Epug generated", epubPath, " ok");
+                ViewModel.LastFileDownloadPath = epubPath;
 
                 if (!ViewModel.RetainFolder)
                 {
                     Directory.Delete(localEpubFolder, recursive: true);
                 }
 
-                enableBookListView();
+                hideSearchProgressBar();
             }
             catch (Exception exception)
             {
@@ -206,14 +206,21 @@ namespace SafariBooksDownload
 
         private void closeShareWidget(object sender, EventArgs e)
         {
+            ViewModel.LastFileDownloadPath = "";
+            enableBookListView();
         }
 
         private void enableBookListView()
         {
+            hideSearchProgressBar();
+            booksListView.IsVisible = true;
+        }
+
+        private void hideSearchProgressBar()
+        {
             progressBar.IsVisible = false;
             downloadLabel.IsVisible = false;
             progressLabel.IsVisible = false;
-            booksListView.IsVisible = true;
         }
 
         private static string getOpfFileFullPathFromBook(List<BookFile> listBookFiles)

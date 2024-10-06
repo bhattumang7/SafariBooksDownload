@@ -61,6 +61,8 @@
               </ListView>
             
             <!-- the share button -->
+            <Label IsVisible="{Binding SahreButtonVisible}" x:Name="epubSuccess" Text="Success! epub gnenerated at below path:" />
+            <Label IsVisible="{Binding SahreButtonVisible}" x:Name="downloadPathSuccessLabel" Text="{Binding LastFileDownloadPath}" />
             <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget" />
 
         </VerticalStackLayout>
