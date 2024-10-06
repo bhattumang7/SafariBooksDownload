@@ -17,6 +17,7 @@ namespace SafariBooksDownload
         private bool _RetainFolder;
 
         private string _lastFileDownloadPath;
+        private string _lastFileDownloadName;
 
         public bool RetainFolder
         {
@@ -41,6 +42,19 @@ namespace SafariBooksDownload
                     _lastFileDownloadPath = value;
                     OnPropertyChanged(nameof(LastFileDownloadPath));
                     OnPropertyChanged(nameof(SahreButtonVisible));
+                }
+            }
+        }
+
+        public string LastFileDownloadName
+        {
+            get => _lastFileDownloadName;
+            set
+            {
+                if (_lastFileDownloadName != value)
+                {
+                    _lastFileDownloadName = value;
+                    OnPropertyChanged(nameof(LastFileDownloadName));
                 }
             }
         }
