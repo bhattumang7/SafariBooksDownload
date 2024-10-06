@@ -195,8 +195,6 @@ namespace SafariBooksDownload
                     Directory.Delete(localEpubFolder, recursive: true);
                 }
 
-                // now lets download the files into oebpsPath folder
-                //await downloadPages(oebpsPath, selectedBook);
                 progressBar.IsVisible = false;
                 downloadLabel.IsVisible = false;
                 progressLabel.IsVisible = false;
