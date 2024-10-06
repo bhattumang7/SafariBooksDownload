@@ -1,7 +1,4 @@
-﻿
-
-
-using AngleSharp.Css.Dom;
+﻿using AngleSharp.Css.Dom;
 using AngleSharp.Css.Parser;
 using AngleSharp;
 using HtmlAgilityPack;
