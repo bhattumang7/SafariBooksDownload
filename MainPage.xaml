@@ -9,7 +9,7 @@
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
-            
+
             <!-- search buttons -->
             <HorizontalStackLayout Spacing="10">
                 <Entry x:Name="bookName" Text="" Completed="OnSearchTextCompleted" Placeholder="Enter book name here" WidthRequest="200" />
@@ -33,40 +33,43 @@
             <ProgressBar x:Name="progressBar" Progress="{Binding DownloadProgress.ProgressBarValue}" 
              HeightRequest="20" />
             <Label x:Name="progressLabel" Text="{Binding DownloadProgress.ProgressLabel}" />
-    
+
             <!-- book list view -->
             <ListView x:Name="booksListView" ItemsSource="{Binding Books}">
-                  <ListView.RowHeight>250</ListView.RowHeight>
-                  <ListView.ItemTemplate>
-                      <DataTemplate x:DataType="local:Book">
-                          <ViewCell>
-                              <StackLayout x:Name="itemLayout" Orientation="Horizontal" VerticalOptions="Fill" HorizontalOptions="Fill">
-                                  <Image Source="{Binding cover_image}" HeightRequest="130" />
-                                  <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                <ListView.RowHeight>250</ListView.RowHeight>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:Book">
+                        <ViewCell>
+                            <StackLayout x:Name="itemLayout" Orientation="Horizontal" VerticalOptions="Fill" HorizontalOptions="Fill">
+                                <Image Source="{Binding cover_image}" HeightRequest="130" />
+                                <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
                                     <Label Text="{Binding title}" FontSize="Micro" LineBreakMode="WordWrap" />
-  
-                                      <Label Text="{Binding authors}" FontSize="Micro" />
-                                      <StackLayout Orientation="Horizontal" >
+
+                                    <Label Text="{Binding authors}" FontSize="Micro" />
+                                    <StackLayout Orientation="Horizontal" >
                                         <Label Text="ID: " FontSize="Micro" />
                                         <Label Text="{Binding product_id}" FontSize="Micro" />
-                                        <Label Text="  Publication Date: " FontSize="Micro" />
+                                    </StackLayout>
+                                    <StackLayout Orientation="Horizontal" >
+                                        <Label Text="Publication Date: " FontSize="Micro" />
                                         <Label Text="{Binding publication_date}" FontSize="Micro" />
-                                      </StackLayout>
-                                  </StackLayout>
-                                  <Button HeightRequest="50" Text="Get" Clicked="downloadBook" CommandParameter="{Binding .}" />
-                              </StackLayout>
-                          </ViewCell>
-                      </DataTemplate>
-                  </ListView.ItemTemplate>
-              </ListView>
-            
+                                    </StackLayout>
+                                </StackLayout>
+                                <Button HeightRequest="50" Text="Get" Clicked="downloadBook" CommandParameter="{Binding .}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
             <!-- the share button -->
-            <Label IsVisible="{Binding SahreButtonVisible}" x:Name="epubSuccess" Text="Success! epub gnenerated at below path:" />
+            <Label IsVisible="{Binding SahreButtonVisible}" x:Name="epubSuccess" TextColor="Green" Text="Success! epub gnenerated at below path:" />
             <Label IsVisible="{Binding SahreButtonVisible}" x:Name="downloadPathSuccessLabel" Text="{Binding LastFileDownloadPath}" />
 
             <HorizontalStackLayout Spacing="10">
                 <Button IsVisible="{Binding SahreButtonVisible}" x:Name="shareDownloadedFile" Text="Share file" Clicked="shareFile" />
                 <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget"/>
+                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="deleteLocalFile" Text="Delete file" Clicked="deleteFile"/>
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
