@@ -13,7 +13,11 @@
 - Download resumes from where it stopped.
 - Share button is now built into the application allowing users to share the file to other applications like OneDrive, Kindle, Google Drive etc. 
 
-Here are some screen clippings: 
+### Here are some screen clippings: 
+
+Here is how the login page looks like
+<img src="./Login_page.jpg" alt="Login Page" width="200">
+
 Here is how the Search screen looks like: 
 <img src="./Search_screen.jpg" alt="Search Screen" width="200">
 
@@ -24,5 +28,4 @@ Here is how the success page with Share to other applications and delete button 
 <img src="./Share_success.jpg" alt="Dwonlaod Progress Screen" width="200">
 
 
-Here is how the success page with Share to other applications and delete button looks like: 
-<img src="./Login_page.jpg" alt="Login Page" width="200">
+
