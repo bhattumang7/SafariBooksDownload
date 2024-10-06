@@ -199,10 +199,7 @@ namespace SafariBooksDownload
             }
             catch (Exception exception)
             {
-                progressBar.IsVisible = false;
-                downloadLabel.IsVisible = false;
-                progressLabel.IsVisible = false;
-                booksListView.IsVisible = true;
+                enableBookList();
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace , " ok");
             }
         }
