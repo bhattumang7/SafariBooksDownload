@@ -68,8 +68,8 @@
 
             <HorizontalStackLayout Spacing="10">
                 <Button IsVisible="{Binding SahreButtonVisible}" x:Name="shareDownloadedFile" Text="Share file" Clicked="shareFile" />
-                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget"/>
                 <Button IsVisible="{Binding SahreButtonVisible}" x:Name="deleteLocalFile" Text="Delete file" Clicked="deleteFile"/>
+                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget"/>
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
