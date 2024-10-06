@@ -206,6 +206,7 @@ namespace SafariBooksDownload
         private void closeShareWidget(object sender, EventArgs e)
         {
             ViewModel.LastFileDownloadPath = "";
+            ViewModel.LastFileDownloadName = "";
             enableBookListView();
         }
 
