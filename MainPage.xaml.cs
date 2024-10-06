@@ -74,15 +74,15 @@ namespace SafariBooksDownload
 
         private async void OnSearchButtonClick(object sender, EventArgs e)
         {
-            // Handle button click here
-            //await DisplayAlert("Alert", "Clicked", "ok");
             try
             {
+                ViewModel.LastFileDownloadPath = "";
                 ViewModel.searchInProgress = true;
                 ViewModel.Books.Clear();
                 var searchTerm = bookName.Text;
                 await getJsonAsync(searchTerm);
                 ViewModel.searchInProgress = false;
+
             }
             catch(Exception ex)
             {
@@ -101,6 +101,7 @@ namespace SafariBooksDownload
                 downloadLabel.IsVisible = true;
                 progressLabel.IsVisible = true;
                 booksListView.IsVisible = false;
+                ViewModel.LastFileDownloadPath = ""; 
 
                 Book selectedBook = (Book)((Button)sender).BindingContext;
                 //await DisplayAlert("Book not found", selectedBook.title + " " + selectedBook.product_id + "book selected" + "book selected", " ok");
@@ -188,6 +189,7 @@ namespace SafariBooksDownload
                     // do not do anything. we keep using the older path
                 }
 
+                ViewModel.LastFileDownloadName = selectedBook.getTitle_file_name_safe() + ".epub";
                 ViewModel.LastFileDownloadPath = epubPath;
 
                 if (!ViewModel.RetainFolder)
@@ -208,6 +210,15 @@ namespace SafariBooksDownload
         {
             ViewModel.LastFileDownloadPath = "";
             enableBookListView();
+        }
+
+        private async void shareFile(object sender, EventArgs e)
+        {
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = ViewModel.LastFileDownloadName,
+                File = new ShareFile(ViewModel.LastFileDownloadPath)
+            });
         }
 
         private void enableBookListView()
