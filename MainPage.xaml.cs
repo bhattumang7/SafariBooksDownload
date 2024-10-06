@@ -195,16 +195,16 @@ namespace SafariBooksDownload
                     Directory.Delete(localEpubFolder, recursive: true);
                 }
 
-                enableBookList();
+                enableBookListView();
             }
             catch (Exception exception)
             {
-                enableBookList();
+                enableBookListView();
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace , " ok");
             }
         }
 
-        private void enableBookList()
+        private void enableBookListView()
         {
             progressBar.IsVisible = false;
             downloadLabel.IsVisible = false;
