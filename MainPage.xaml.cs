@@ -204,7 +204,7 @@ namespace SafariBooksDownload
             }
         }
 
-        private async void closeShareWidget(object sender, EventArgs e)
+        private void closeShareWidget(object sender, EventArgs e)
         {
         }
 
