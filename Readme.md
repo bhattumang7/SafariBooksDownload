@@ -11,3 +11,4 @@
 - Does not have the problem of fonts not downloading.
 - Injects "override_v1.css" to every file.
 - Download resumes from where it stopped.
+- Share button is now built into the application allowing users to share the file to other applications like OneDrive, Kindle, Google Drive etc. 
