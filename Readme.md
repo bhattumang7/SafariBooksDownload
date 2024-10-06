@@ -12,3 +12,17 @@
 - Injects "override_v1.css" to every file.
 - Download resumes from where it stopped.
 - Share button is now built into the application allowing users to share the file to other applications like OneDrive, Kindle, Google Drive etc. 
+
+Here are some screen clippings: 
+Here is how the Search screen looks like: 
+![Search Screen](./Search_screen.jpg)
+
+Here is how the download progress screen looks like: 
+![Dwonlaod Progress Screen](./Dwonload_progress.jpg)
+
+Here is how the success page with Share to other applications and delete button looks like: 
+![Dwonlaod Progress Screen](./Share_success.jpg)
+
+
+Here is how the success page with Share to other applications and delete button looks like: 
+![Login Page](./Login_page.jpg)
