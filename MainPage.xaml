@@ -11,7 +11,7 @@
             Spacing="25">
             
             <!-- search buttons -->
-            <HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="10">
                 <Entry x:Name="bookName" Text="" Completed="OnSearchTextCompleted" Placeholder="Enter book name here" WidthRequest="200" />
                 <Button x:Name="downloadbtn" Text="Search book" Clicked="OnSearchButtonClick" />
             </HorizontalStackLayout>
@@ -63,8 +63,11 @@
             <!-- the share button -->
             <Label IsVisible="{Binding SahreButtonVisible}" x:Name="epubSuccess" Text="Success! epub gnenerated at below path:" />
             <Label IsVisible="{Binding SahreButtonVisible}" x:Name="downloadPathSuccessLabel" Text="{Binding LastFileDownloadPath}" />
-            <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget" />
 
+            <HorizontalStackLayout Spacing="10">
+                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="shareDownloadedFile" Text="Share file" Clicked="shareFile" />
+                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget"/>
+            </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 
