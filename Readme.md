@@ -18,11 +18,11 @@ Here is how the Search screen looks like:
 <img src="./Search_screen.jpg" alt="Search Screen" width="200">
 
 Here is how the download progress screen looks like: 
-![Dwonlaod Progress Screen](./Dwonload_progress.jpg width="200")
+<img src="./Dwonload_progress.jpg" alt="Dwonlaod Progress Screen" width="200">
 
 Here is how the success page with Share to other applications and delete button looks like: 
-![Dwonlaod Progress Screen](./Share_success.jpg width="200")
+<img src="./Share_success.jpg" alt="Dwonlaod Progress Screen" width="200">
 
 
 Here is how the success page with Share to other applications and delete button looks like: 
-![Login Page](./Login_page.jpg width="200")
+<img src="./Login_page.jpg" alt="Login Page" width="200">
