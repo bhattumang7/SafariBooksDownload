@@ -15,14 +15,14 @@
 
 Here are some screen clippings: 
 Here is how the Search screen looks like: 
-![Search Screen](./Search_screen.jpg)
+![Search Screen](./Search_screen.jpg =250x)
 
 Here is how the download progress screen looks like: 
-![Dwonlaod Progress Screen](./Dwonload_progress.jpg)
+![Dwonlaod Progress Screen](./Dwonload_progress.jpg =250x)
 
 Here is how the success page with Share to other applications and delete button looks like: 
-![Dwonlaod Progress Screen](./Share_success.jpg)
+![Dwonlaod Progress Screen](./Share_success.jpg =250x)
 
 
 Here is how the success page with Share to other applications and delete button looks like: 
-![Login Page](./Login_page.jpg)
+![Login Page](./Login_page.jpg =250x)
