@@ -21,8 +21,9 @@
             <Label x:Name="searchingLabel" IsVisible="{Binding searchInProgress}" Text="Searching for books" />
             <ActivityIndicator IsVisible="{Binding searchInProgress}" IsRunning="{Binding searchInProgress}" />
 
+            <!-- web view that we use to log into orielly and get the token -->
             <WebView x:Name="AuthWebView" HeightRequest="600" Source="https://learning.oreilly.com/profile" 
-         Navigated="AuthWebView_OnNavigated" />
+                Navigated="AuthWebView_OnNavigated" />
 
             <Label x:Name="downloadLabel" Text="{Binding DownloadProgress.DownloadLabel}" />
             <ProgressBar x:Name="progressBar" Progress="{Binding DownloadProgress.ProgressBarValue}" 
