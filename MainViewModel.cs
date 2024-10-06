@@ -40,8 +40,14 @@ namespace SafariBooksDownload
                 {
                     _lastFileDownloadPath = value;
                     OnPropertyChanged(nameof(LastFileDownloadPath));
+                    OnPropertyChanged(nameof(SahreButtonVisible));
                 }
             }
+        }
+
+        public bool SahreButtonVisible
+        {
+            get => !string.IsNullOrEmpty(_lastFileDownloadPath) ;
         }
 
         public bool searchInProgress

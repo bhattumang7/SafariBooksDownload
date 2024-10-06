@@ -59,6 +59,9 @@
                       </DataTemplate>
                   </ListView.ItemTemplate>
               </ListView>
+            
+            <!-- the share button -->
+            <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget" />
 
         </VerticalStackLayout>
     </ScrollView>
