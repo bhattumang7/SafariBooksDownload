@@ -32,24 +32,14 @@ namespace SafariBooksDownload
             InitializeComponent();
             
             progress = new DownloadViewModel();
-            //BindingContext = this;
             ViewModel = new MainViewModel();
             ViewModel.RetainFolder = false;
-            //ViewModel.Books = new ObservableCollection<Book>();
             BindingContext = ViewModel;
             downloadbtn.IsEnabled = false;
-            //progressBar.TE
             progress.ProgressBarValue = 0;
             downloadLabel.IsVisible = false;
             progressBar.IsVisible = false;
             progressLabel.IsVisible = false;
-
-            /*if (File.Exists(Config.COOKIES_FILE))
-            {
-                AuthWebView.IsVisible = false;
-                downloadbtn.IsEnabled = true;
-            }*/
-            
         }
 
         protected override async void OnAppearing()
