@@ -29,7 +29,7 @@ Here is how the download progress screen looks like:
 
 Here is how the success page with Share to other applications and delete button looks like: 
 
-<img src="./Share_success.jpg" alt="Dwonlaod Progress Screen" width="200">
+<img src="./Share_success.jpg" alt="Dwonlaod Progress Screen" width="200" style=" border-radius: 25px; box-shadow: inset 0 0 55px rgba(0, 0, 0, 1.0);">
 
 
 
