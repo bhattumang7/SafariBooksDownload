@@ -587,7 +587,7 @@ namespace SafariBooksDownload
         private static string GetRelativePath(Book selectedBook, string fromPath, string toPath)
         {
             var fromUri = new Uri(fromPath);
-            Uri toPthUri = new Uri(toPath, UriKind.RelativeOrAbsolute);
+            var toPthUri = new Uri(toPath, UriKind.RelativeOrAbsolute);
 
             if (!Uri.IsWellFormedUriString(toPath, UriKind.Absolute))
             {
