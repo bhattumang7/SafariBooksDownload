@@ -480,13 +480,11 @@ namespace SafariBooksDownload
                                         <head>
                                         <meta charset="utf-8" /> 
                                         {extraCssInfo}
-
-                                        """ + styleSheetSection + $"""
-
-                                                                   </head>
-                                                                   <body><div class="ucvMode-white"><div id="book-content">{adjustedHtml}</div></div></body>
-                                                                   </html>
-                                                                   """;
+                                        {styleSheetSection}
+                                       </head>
+                                       <body><div class="ucvMode-white"><div id="book-content">{adjustedHtml}</div></div></body>
+                                       </html>
+                    """;
 
                     var htmlDoc = new HtmlDocument();
                     htmlDoc.LoadHtml(pointMessage);
