@@ -13,6 +13,6 @@ namespace SafariBooksDownload
     }
     public class Assets
     {
-        public List<string> stylesheets { get; set; }
+        public List<string>? stylesheets { get; set; }
     }
 }
