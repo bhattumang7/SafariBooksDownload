@@ -796,10 +796,9 @@ namespace SafariBooksDownload
             {
                 searchContent = System.Web.HttpUtility.UrlEncode(searchContent);
 
-                string requestUrl = "https://www.oreilly.com/search/api/search/?q=" + searchContent +
                                     "&type=book&rows=20&language_with_transcripts=en&tzOffset=-5.5&feature_flags=improveSearchFilters&report=true&isTopics=false";
                 CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-                var response = await customHttpClientHandler.GetAsync(requestUrl);
+                var response = await customHttpClientHandler.GetAsync(searchRequestUrl);
 
                 response.EnsureSuccessStatusCode();
                 var byteArray = await response.Content.ReadAsByteArrayAsync();
