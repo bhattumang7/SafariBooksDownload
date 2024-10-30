@@ -314,8 +314,8 @@ namespace SafariBooksDownload
         {
             string requestUrl = "https://learning.oreilly.com/api/v2/epub-chapters/?epub_identifier=urn:orm:book:" +
                                 selectedBook.product_id;
-            CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-            var response = await customHttpClientHandler.GetAsync(requestUrl);
+            ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
+            var response = await oRiellyHttpClientAdapter.GetAsync(requestUrl);
 
             response.EnsureSuccessStatusCode();
             var byteArray = await response.Content.ReadAsByteArrayAsync();
@@ -398,8 +398,8 @@ namespace SafariBooksDownload
 
             if (!File.Exists(localPath))
             {
-                CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-                HttpResponseMessage response = await customHttpClientHandler.GetAsync(file.url);
+                ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
+                HttpResponseMessage response = await oRiellyHttpClientAdapter.GetAsync(file.url);
 
                 byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
 
@@ -611,7 +611,7 @@ namespace SafariBooksDownload
         private async Task<string> PrepareListOfFiles(Book selectedBook)
         {
             var requestUrl = selectedBook.files_URL;
-            var customHttpClientHandler = new CustomHttpClientHandler();
+            var customHttpClientHandler = new ORiellyHttpClientAdapter();
             var response = await customHttpClientHandler.GetAsync(requestUrl);
 
             response.EnsureSuccessStatusCode();
@@ -639,8 +639,8 @@ namespace SafariBooksDownload
         private async Task<string> GetNextUrl(Book selectedBook, string url, int totalFileCount, int pageCount,
             int downloaded)
         {
-            CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-            var response = await customHttpClientHandler.GetAsync(url);
+            ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
+            var response = await oRiellyHttpClientAdapter.GetAsync(url);
 
             response.EnsureSuccessStatusCode();
             var byteArray = await response.Content.ReadAsByteArrayAsync();
@@ -690,8 +690,8 @@ namespace SafariBooksDownload
         {
             List<JsonNodeInfo> tableOfContent = new List<JsonNodeInfo>();
             string requestUrl = selectedBook.table_of_contents;
-            CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-            var response = await customHttpClientHandler.GetAsync(requestUrl);
+            ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
+            var response = await oRiellyHttpClientAdapter.GetAsync(requestUrl);
 
             response.EnsureSuccessStatusCode();
             var byteArray = await response.Content.ReadAsByteArrayAsync();
@@ -718,8 +718,8 @@ namespace SafariBooksDownload
         {
             foreach (string chapter in selectedBook.chapters)
             {
-                CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-                var response = await customHttpClientHandler.GetAsync(chapter);
+                ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
+                var response = await oRiellyHttpClientAdapter.GetAsync(chapter);
 
                 response.EnsureSuccessStatusCode();
                 var byteArray = await response.Content.ReadAsByteArrayAsync();
@@ -743,8 +743,8 @@ namespace SafariBooksDownload
         private async Task<string> PupulateBookDetails(Book book)
         {
             string requestUrl = "https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" + book.product_id + "/";
-            CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-            var response = await customHttpClientHandler.GetAsync(requestUrl);
+            ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
+            var response = await oRiellyHttpClientAdapter.GetAsync(requestUrl);
 
             response.EnsureSuccessStatusCode();
             var byteArray = await response.Content.ReadAsByteArrayAsync();
@@ -793,8 +793,8 @@ namespace SafariBooksDownload
 
                 string searchRequestUrl = "https://www.oreilly.com/search/api/search/?q=" + searchContent +
                                     "&type=book&rows=20&language_with_transcripts=en&tzOffset=-5.5&feature_flags=improveSearchFilters&report=true&isTopics=false";
-                CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-                var response = await customHttpClientHandler.GetAsync(searchRequestUrl);
+                ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
+                var response = await oRiellyHttpClientAdapter.GetAsync(searchRequestUrl);
 
                 response.EnsureSuccessStatusCode();
                 var byteArray = await response.Content.ReadAsByteArrayAsync();

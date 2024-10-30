@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 namespace SafariBooksDownload
 {
 
-    public class CustomHttpClientHandler 
+    public class ORiellyHttpClientAdapter 
     {
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer;
 
-        public CustomHttpClientHandler()
+        public ORiellyHttpClientAdapter()
         {
             cookieContainer = new CookieContainer();
             LoadCookiesFromFile(Config.COOKIES_FILE);

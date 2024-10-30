@@ -7,19 +7,19 @@ using SafariBooksDownload;
 
 public class CustomHttpClientHandlerInstance 
 {
-    private static CustomHttpClientHandler customHttpClientHandler;
+    private static ORiellyHttpClientAdapter _oRiellyHttpClientAdapter;
     private CustomHttpClientHandlerInstance() {
     }
 
-    public static CustomHttpClientHandler Instance
+    public static ORiellyHttpClientAdapter Instance
     {
         get
         {
-            if (customHttpClientHandler == null)
+            if (_oRiellyHttpClientAdapter == null)
             {
-                customHttpClientHandler = new CustomHttpClientHandler();
+                _oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
             }
-            return customHttpClientHandler;
+            return _oRiellyHttpClientAdapter;
         }
     }
 
