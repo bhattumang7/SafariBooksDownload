@@ -151,7 +151,7 @@ namespace SafariBooksDownload
                 // attempt to rename the file to a better name if it works. If not, let's use the older name. 
                 try
                 {
-                    string newEpubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),
+                    string newEpubPath = Path.Combine(localDirectoryName,
                         selectedBook.getTitle_file_name_safe() + ".epub");
                     DeleteFileIfExists(newEpubPath);
                     
