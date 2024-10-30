@@ -434,15 +434,15 @@ namespace SafariBooksDownload
 
                 if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
                 {
-                    PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
-                    String extraCssInfo = "";
+                    var pathAdjuster = new PathAdjuster(selectedBook.product_id);
+                    var extraCssInfo = "";
 
                     if (selectedChapter?.related_assets.stylesheets is { Count: > 0 })
                     {
                         selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" + selectedBook.product_id + "/files/override_v1.css");
                         foreach (var styleSheetUrl in selectedChapter.related_assets.stylesheets)
                         {
-                            string path = GetRelativePath(selectedBook, file.url, styleSheetUrl);
+                            var path = GetRelativePath(selectedBook, file.url, styleSheetUrl);
                             extraCssInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
                         }
                     }
