@@ -7,7 +7,6 @@ using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
 using System.Xml.Linq;
 
 
@@ -15,8 +14,6 @@ namespace SafariBooksDownload
 {
     public partial class MainPage : ContentPage
     {
-        // public ObservableCollection<Book> Books { get; set; }
-        public ICommand DownloadBookCommand { get; }
         public string ProgressText = "";
 
         public DownloadViewModel Progress { get; set; } = new DownloadViewModel();
