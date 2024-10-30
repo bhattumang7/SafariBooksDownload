@@ -665,7 +665,7 @@ namespace SafariBooksDownload
 
             var fileInfo = JsonSerializer.Deserialize<List<BookFile>>(results, options);
             selectedBook.fileList.AddRange(fileInfo.ToList());
-            float percentageDone = (downloaded * 100) / pageCount;
+            double percentageDone = (downloaded * 100) / pageCount;
             //pageCount 100
             //downloaded 
 
