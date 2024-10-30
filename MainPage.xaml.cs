@@ -437,27 +437,17 @@ namespace SafariBooksDownload
                     PathAdjuster pathAdjuster = new PathAdjuster(selectedBook.product_id);
                     String extraCssInfo = "";
 
-                    if (selectedChapter != null)
+                    if (selectedChapter?.related_assets.stylesheets is { Count: > 0 })
                     {
-                        if (selectedChapter.related_assets != null)
+                        selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" + selectedBook.product_id + "/files/override_v1.css");
+                        foreach (var styleSheetUrl in selectedChapter.related_assets.stylesheets)
                         {
-                            if (selectedChapter.related_assets.stylesheets != null && selectedChapter.related_assets.stylesheets.Count > 0)
-                            {
-
-                                selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" + selectedBook.product_id + "/files/override_v1.css");
-                                foreach (var styleSheetUrl in selectedChapter.related_assets.stylesheets)
-                                {
-                                    string path = GetRelativePath(selectedBook, file.url, styleSheetUrl);
-
-
-                                    extraCssInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
-                                }
-
-                            }
+                            string path = GetRelativePath(selectedBook, file.url, styleSheetUrl);
+                            extraCssInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
                         }
                     }
 
-                    string adjustedHtml = File.ReadAllText(localPath);
+                    var adjustedHtml = await File.ReadAllTextAsync(localPath);
                     var pointMessage = $$"""
                                          <!DOCTYPE html>
                                          <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2002/06/xhtml2/ http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd" xmlns:epub="http://www.idpf.org/2007/ops">
