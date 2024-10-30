@@ -774,6 +774,7 @@ namespace SafariBooksDownload
                     var webView = sender as WebView;
                     if (e.Url == "https://learning.oreilly.com/profile/")
                     {
+                        // execute javascript in browser control to get the cookie if navigation to profile page was sucess
                         string output = await webView.EvaluateJavaScriptAsync(
                             "JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
                         output = Regex.Unescape(output);
