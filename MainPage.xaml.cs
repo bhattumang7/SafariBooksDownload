@@ -392,8 +392,8 @@ namespace SafariBooksDownload
 
 
 
-            var localPath = Path.Join(localEpubFolder, file.full_path);
-            string directoryPath = Path.GetDirectoryName(localPath);
+            string localPath = Path.Join(localEpubFolder, file.full_path) ?? throw new Exception($"Could not join {localEpubFolder} and {file.full_path} to create EPUB path");
+            string directoryPath = Path.GetDirectoryName(localPath) ?? throw new Exception($"Could get directory name from {localPath}.");
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
