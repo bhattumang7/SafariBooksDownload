@@ -140,7 +140,7 @@ namespace SafariBooksDownload
                 // Create zip file
                 ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
 
-                Progress.ProgressBarValue = 30 / 100;
+                Progress.ProgressBarValue = 0.3d;
                 Progress.ProgressLabel = "Creating epub";
 
                 if (File.Exists(epubPath))
