@@ -652,9 +652,8 @@ namespace SafariBooksDownload
 
         private async Task<string> GetNextUrl(Book selectedBook, string url, int totalFileCount, int pageCount, int downloaded)
         {
-            string requestURL = url;
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
-            var response = await customHttpClientHandler.GetAsync(requestURL);
+            var response = await customHttpClientHandler.GetAsync(url);
 
             response.EnsureSuccessStatusCode();
             var byteArray = await response.Content.ReadAsByteArrayAsync();
