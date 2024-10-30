@@ -106,7 +106,7 @@ namespace SafariBooksDownload
 
 
                 ViewModel.DownloadProgress.ProgressLabel = "Fetching list of files";
-                await ParepareListOfFiles(selectedBook);
+                await PrepareListOfFiles(selectedBook);
 
                 ViewModel.DownloadProgress.ProgressLabel = "Fetching chapter list";
                 List<ChappterInfo> chapters = await FetchChapterInfo(selectedBook);
@@ -615,7 +615,7 @@ namespace SafariBooksDownload
                 .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
 
-        private async Task<string> ParepareListOfFiles(Book selectedBook)
+        private async Task<string> PrepareListOfFiles(Book selectedBook)
         {
             var requestUrl = selectedBook.files_URL;
             var customHttpClientHandler = new CustomHttpClientHandler();
