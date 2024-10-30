@@ -79,15 +79,12 @@ namespace SafariBooksDownload
                 var searchTerm = bookName.Text;
                 await GetJsonAsync(searchTerm);
                 ViewModel.searchInProgress = false;
-
             }
             catch (Exception ex)
             {
                 ViewModel.searchInProgress = false;
                 await DisplayAlert("Error occured", ex.Message + "\r\n" + ex.StackTrace, " ok");
             }
-
-
         }
 
         private async void DownloadBook(object sender, EventArgs e)
@@ -139,14 +136,15 @@ namespace SafariBooksDownload
                 }
 
                 var xmlString = """
-                <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>
-                """;
+                                <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>
+                                """;
                 xmlString = xmlString.Replace("OEBPS/content.opf", opfPath);
                 File.WriteAllText(containeXmlPath, xmlString);
 
                 string folderName = Path.GetFileName(localEpubFolder);
                 string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".zip");
-                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".epub");
+                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),
+                    selectedBook.product_id + ".epub");
 
 
                 Progress.DownloadLabel = "Generating epub";
@@ -156,6 +154,7 @@ namespace SafariBooksDownload
                 {
                     File.Delete(zipPath);
                 }
+
                 // Create zip file
                 ZipFile.CreateFromDirectory(localEpubFolder, zipPath);
 
@@ -166,17 +165,20 @@ namespace SafariBooksDownload
                 {
                     File.Delete(epubPath);
                 }
+
                 // Rename zip file to .epub
                 File.Move(zipPath, epubPath);
 
                 // attempt to rename the file to a better name if it works. If not, let's use the older name. 
                 try
                 {
-                    string newEpubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.getTitle_file_name_safe() + ".epub");
+                    string newEpubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),
+                        selectedBook.getTitle_file_name_safe() + ".epub");
                     if (File.Exists(newEpubPath))
                     {
                         File.Delete(newEpubPath);
                     }
+
                     File.Move(epubPath, newEpubPath);
 
                     epubPath = newEpubPath; // Update epubPath to the new name if successful
@@ -223,6 +225,7 @@ namespace SafariBooksDownload
             {
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace, " ok");
             }
+
             ViewModel.LastFileDownloadPath = "";
             ViewModel.LastFileDownloadName = "";
             EnableBookListView();
@@ -282,7 +285,6 @@ namespace SafariBooksDownload
 
         public async Task AddOverrideCssToManifest(string filePath)
         {
-
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException(filePath);
@@ -320,7 +322,8 @@ namespace SafariBooksDownload
         private async Task<List<ChappterInfo>> FetchChapterInfo(Book selectedBook)
         {
             List<ChappterInfo> chappterInfos = new List<ChappterInfo>();
-            string requestUrl = "https://learning.oreilly.com/api/v2/epub-chapters/?epub_identifier=urn:orm:book:" + selectedBook.product_id;
+            string requestUrl = "https://learning.oreilly.com/api/v2/epub-chapters/?epub_identifier=urn:orm:book:" +
+                                selectedBook.product_id;
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
             var response = await customHttpClientHandler.GetAsync(requestUrl);
 
@@ -342,7 +345,8 @@ namespace SafariBooksDownload
             return chappterInfos;
         }
 
-        private async Task<string> DownloadFileAsync(Book selectedBook, List<ChappterInfo> chapters, string localEpubFolder)
+        private async Task<string> DownloadFileAsync(Book selectedBook, List<ChappterInfo> chapters,
+            string localEpubFolder)
         {
             ViewModel.DownloadProgress.DownloadLabel = selectedBook.title + " (downloading files)";
             double lastPercentage = -1;
@@ -358,20 +362,23 @@ namespace SafariBooksDownload
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         ViewModel.DownloadProgress.ProgressBarValue = percentDone / 100;
-                        ViewModel.DownloadProgress.ProgressLabel = $"Downloading files. {percentDone} percentage done. ({currentFileNo}/{totalFileCount}) ";
+                        ViewModel.DownloadProgress.ProgressLabel =
+                            $"Downloading files. {percentDone} percentage done. ({currentFileNo}/{totalFileCount}) ";
                     });
                 }
 
-                var downloadTasks = fileChunk.Select(file => DownloadSingleFIle(selectedBook, chapters, localEpubFolder, file)).ToList();
+                var downloadTasks = fileChunk
+                    .Select(file => DownloadSingleFIle(selectedBook, chapters, localEpubFolder, file)).ToList();
                 await Task.WhenAll(downloadTasks);
 
                 currentFileNo += 7;
-
             }
+
             return "";
         }
 
-        private static async Task DownloadSingleFIle(Book selectedBook, List<ChappterInfo> chapters, string localEpubFolder, BookFile file)
+        private static async Task DownloadSingleFIle(Book selectedBook, List<ChappterInfo> chapters,
+            string localEpubFolder, BookFile file)
         {
             ChappterInfo? selectedChapter = null;
             foreach (var chapter in chapters)
@@ -390,22 +397,22 @@ namespace SafariBooksDownload
             //Current
 
 
-
-
-            string localPath = Path.Join(localEpubFolder, file.full_path) ?? throw new Exception($"Could not join {localEpubFolder} and {file.full_path} to create EPUB path");
-            string directoryPath = Path.GetDirectoryName(localPath) ?? throw new Exception($"Could get directory name from {localPath}.");
+            string localPath = Path.Join(localEpubFolder, file.full_path) ??
+                               throw new Exception(
+                                   $"Could not join {localEpubFolder} and {file.full_path} to create EPUB path");
+            string directoryPath = Path.GetDirectoryName(localPath) ??
+                                   throw new Exception($"Could get directory name from {localPath}.");
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
             }
+
             if (!File.Exists(localPath))
             {
-
                 CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
                 HttpResponseMessage response = await customHttpClientHandler.GetAsync(file.url);
 
                 byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-
 
 
                 await File.WriteAllBytesAsync(localPath, fileBytes);
@@ -439,7 +446,9 @@ namespace SafariBooksDownload
 
                     if (selectedChapter?.related_assets.stylesheets is { Count: > 0 })
                     {
-                        selectedChapter.related_assets.stylesheets.Add("https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" + selectedBook.product_id + "/files/override_v1.css");
+                        selectedChapter.related_assets.stylesheets.Add(
+                            "https://learning.oreilly.com/api/v2/epubs/urn:orm:book:" + selectedBook.product_id +
+                            "/files/override_v1.css");
                         foreach (var styleSheetUrl in selectedChapter.related_assets.stylesheets)
                         {
                             var path = GetRelativePath(selectedBook, file.url, styleSheetUrl);
@@ -499,18 +508,18 @@ namespace SafariBooksDownload
                             }
                         }
                     }
+
                     htmlDoc.Save(localPath);
 
                     //File.WriteAllText(localPath, pointMessage);
                 }
 
                 Console.WriteLine($"File downloaded and saved to {localPath}");
-
-
             }
         }
 
-        private static void AdjustPathForImagesEtcReferredInCss(Book selectedBook, BookFile file, ICssStyleSheet stylesheet)
+        private static void AdjustPathForImagesEtcReferredInCss(Book selectedBook, BookFile file,
+            ICssStyleSheet stylesheet)
         {
             // update images and make them a relative path
             foreach (var rule in stylesheet.Rules)
@@ -521,11 +530,11 @@ namespace SafariBooksDownload
                     string[] propertiesWithUrls =
                     [
                         "background",
-                                        "background-image",
-                                        "border-image",
-                                        "content",
-                                        "cursor",
-                                        "list-style-image"
+                        "background-image",
+                        "border-image",
+                        "content",
+                        "cursor",
+                        "list-style-image"
                     ];
 
                     // Check each property for URLs
@@ -545,10 +554,7 @@ namespace SafariBooksDownload
                                 var updatedValue = propertyValue.Replace(extractedUrl, escapedUpdatedPath);
                                 styleRule.Style.SetProperty(propertyName, updatedValue);
                                 Console.WriteLine($"Found URL in {propertyName}: {propertyValue}");
-
-
                             }
-
                         }
                     }
                 }
@@ -595,6 +601,7 @@ namespace SafariBooksDownload
                         break;
                     }
                 }
+
                 if (!found)
                 {
                     return toPath;
@@ -604,7 +611,8 @@ namespace SafariBooksDownload
             var toUri = new Uri(toPath);
 
             var relativeUri = fromUri.MakeRelativeUri(toUri);
-            return Uri.UnescapeDataString(relativeUri.ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            return Uri.UnescapeDataString(relativeUri.ToString())
+                .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
 
         private async Task<String> ParepareListOfFiles(Book selectedBook)
@@ -621,21 +629,22 @@ namespace SafariBooksDownload
             var jsonDocument = JsonDocument.Parse(stringResponse);
             int totalFilesCount = jsonDocument.RootElement.GetProperty("count").GetInt32();
             ViewModel.DownloadProgress.DownloadLabel = selectedBook.title + " - (Getting list of files for this book)";
-            ViewModel.DownloadProgress.ProgressLabel = "Getting list of files that needs to be dowloaded for " + selectedBook.title;
+            ViewModel.DownloadProgress.ProgressLabel =
+                "Getting list of files that needs to be dowloaded for " + selectedBook.title;
             MainThread.BeginInvokeOnMainThread(() =>
             {
-
-                ViewModel.DownloadProgress.ProgressLabel = $"Total {totalFilesCount} files found. 0 of {totalFilesCount / 20} page's information fetched.";
+                ViewModel.DownloadProgress.ProgressLabel =
+                    $"Total {totalFilesCount} files found. 0 of {totalFilesCount / 20} page's information fetched.";
                 ViewModel.DownloadProgress.ProgressBarValue = 0;
             });
-
 
 
             await GetNextUrl(selectedBook, selectedBook.files_URL, totalFilesCount, totalFilesCount / 20, 0);
             return "";
         }
 
-        private async Task<string> GetNextUrl(Book selectedBook, string url, int totalFileCount, int pageCount, int downloaded)
+        private async Task<string> GetNextUrl(Book selectedBook, string url, int totalFileCount, int pageCount,
+            int downloaded)
         {
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
             var response = await customHttpClientHandler.GetAsync(url);
@@ -667,7 +676,8 @@ namespace SafariBooksDownload
             //});
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                ViewModel.DownloadProgress.ProgressLabel = $"Total {totalFilesCount} files found. {++downloaded} of {pageCount} page's information fetched.";
+                ViewModel.DownloadProgress.ProgressLabel =
+                    $"Total {totalFilesCount} files found. {++downloaded} of {pageCount} page's information fetched.";
                 ViewModel.DownloadProgress.ProgressBarValue = percentageDone / 100;
             });
 
@@ -679,12 +689,12 @@ namespace SafariBooksDownload
                     await GetNextUrl(selectedBook, next.GetString(), totalFileCount, pageCount, downloaded);
                 }
             }
+
             return "";
         }
 
         private async Task<List<JsonNodeInfo>> GetFlatTableOfContent(Book selectedBook)
         {
-
             List<JsonNodeInfo> tableOfCOntent = new List<JsonNodeInfo>();
             string requestUrl = selectedBook.table_of_contents;
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
@@ -723,6 +733,7 @@ namespace SafariBooksDownload
                 var stringResponse = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
                 int i = 12;
             }
+
             return "";
         }
 
@@ -770,7 +781,8 @@ namespace SafariBooksDownload
                     var webView = sender as WebView;
                     if (e.Url == "https://learning.oreilly.com/profile/")
                     {
-                        string output = await webView.EvaluateJavaScriptAsync("JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
+                        string output = await webView.EvaluateJavaScriptAsync(
+                            "JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
                         output = Regex.Unescape(output);
 
                         File.WriteAllText(Config.COOKIES_FILE, output);
@@ -783,7 +795,6 @@ namespace SafariBooksDownload
             {
                 await DisplayAlert("Error occured", ex.Message + "\r\n" + ex.StackTrace, " ok");
             }
-
         }
 
         private async Task<string> GetJsonAsync(String searchContent)
@@ -792,7 +803,8 @@ namespace SafariBooksDownload
             {
                 searchContent = System.Web.HttpUtility.UrlEncode(searchContent);
 
-                string requestUrl = "https://www.oreilly.com/search/api/search/?q=" + searchContent + "&type=book&rows=20&language_with_transcripts=en&tzOffset=-5.5&feature_flags=improveSearchFilters&report=true&isTopics=false";
+                string requestUrl = "https://www.oreilly.com/search/api/search/?q=" + searchContent +
+                                    "&type=book&rows=20&language_with_transcripts=en&tzOffset=-5.5&feature_flags=improveSearchFilters&report=true&isTopics=false";
                 CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
                 var response = await customHttpClientHandler.GetAsync(requestUrl);
 
@@ -807,9 +819,11 @@ namespace SafariBooksDownload
                 {
                     await DisplayAlert("Book not found", "No book was found for " + searchContent, " ok");
                 }
+
                 // List<Book> localList = new List<Book>();
                 ViewModel.Books.Clear();
-                foreach (var bookEntry in jsonDocument.RootElement.GetProperty("data").GetProperty("products").EnumerateArray())
+                foreach (var bookEntry in jsonDocument.RootElement.GetProperty("data").GetProperty("products")
+                             .EnumerateArray())
                 {
                     Book book = new Book
                     {
@@ -818,8 +832,10 @@ namespace SafariBooksDownload
                         cover_image = bookEntry.GetProperty("cover_image").GetString(),
                         description = bookEntry.GetProperty("description").GetString(),
                         url = bookEntry.GetProperty("url").GetString(),
-                        authors = string.Join(", ", bookEntry.GetProperty("authors").EnumerateArray().Select(author => author.GetString())),
-                        publication_date = bookEntry.GetProperty("custom_attributes").GetProperty("publication_date").GetString()
+                        authors = string.Join(", ",
+                            bookEntry.GetProperty("authors").EnumerateArray().Select(author => author.GetString())),
+                        publication_date = bookEntry.GetProperty("custom_attributes").GetProperty("publication_date")
+                            .GetString()
                     };
                     ViewModel.Books.Add(book);
                 }
@@ -831,7 +847,5 @@ namespace SafariBooksDownload
 
             return "";
         }
-
     }
-
 }
