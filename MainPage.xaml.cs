@@ -518,14 +518,15 @@ namespace SafariBooksDownload
                 if (rule is ICssStyleRule styleRule)
                 {
                     // Properties that can contain URLs
-                    string[] propertiesWithUrls = {
-                                        "background",
+                    string[] propertiesWithUrls =
+                    [
+                        "background",
                                         "background-image",
                                         "border-image",
                                         "content",
                                         "cursor",
                                         "list-style-image"
-                                    };
+                    ];
 
                     // Check each property for URLs
                     foreach (var propertyName in propertiesWithUrls)
