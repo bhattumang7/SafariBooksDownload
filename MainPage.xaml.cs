@@ -615,10 +615,10 @@ namespace SafariBooksDownload
                 .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
 
-        private async Task<String> ParepareListOfFiles(Book selectedBook)
+        private async Task<string> ParepareListOfFiles(Book selectedBook)
         {
-            string requestUrl = selectedBook.files_URL;
-            CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
+            var requestUrl = selectedBook.files_URL;
+            var customHttpClientHandler = new CustomHttpClientHandler();
             var response = await customHttpClientHandler.GetAsync(requestUrl);
 
             response.EnsureSuccessStatusCode();
