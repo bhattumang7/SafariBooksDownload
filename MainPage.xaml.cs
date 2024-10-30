@@ -103,7 +103,6 @@ namespace SafariBooksDownload
                 var s = await DownloadFileAsync(selectedBook, chapters, localEpubFolder);
 
                 // put additional override css file to make the code look better
-                //var sourceCssFilePath = Path.Combine(FileSystem.AppDataDirectory, "Resources", "Raw", );
                 var targetOverrideCssFilePath = Path.Join(localEpubFolder, "override_v1.css");
                 var sourceFileContent = await ReadTextFileAsync("override_v1.css");
                 await File.WriteAllTextAsync(targetOverrideCssFilePath, sourceFileContent);
