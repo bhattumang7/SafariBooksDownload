@@ -665,7 +665,7 @@ namespace SafariBooksDownload
 
             var fileInfo = JsonSerializer.Deserialize<List<BookFile>>(results, options);
             selectedBook.fileList.AddRange(fileInfo.ToList());
-            double percentageDone = (downloaded * 100) / pageCount;
+            double progressLevel = ((downloaded * 100) / pageCount) / 100;
             //pageCount 100
             //downloaded 
 
@@ -678,7 +678,7 @@ namespace SafariBooksDownload
             {
                 ViewModel.DownloadProgress.ProgressLabel =
                     $"Total {totalFilesCount} files found. {++downloaded} of {pageCount} page's information fetched.";
-                ViewModel.DownloadProgress.ProgressBarValue = percentageDone / 100;
+                ViewModel.DownloadProgress.ProgressBarValue = progressLevel;
             });
 
             if (jsonDocument.RootElement.TryGetProperty("next", out JsonElement next))
