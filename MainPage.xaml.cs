@@ -752,12 +752,6 @@ namespace SafariBooksDownload
 
 
             var jsonDocument = JsonDocument.Parse(stringResponse);
-            /*book.chapters = new List<string>();
-            foreach(var chapter in jsonDocument.RootElement.GetProperty("chapters").EnumerateArray() )
-            {
-              book.chapters.Add(chapter.GetString());
-            }
-            */
             book.isbn = jsonDocument.RootElement.GetProperty("isbn").GetString();
             book.table_of_contents = jsonDocument.RootElement.GetProperty("table_of_contents").GetString();
             book.files_URL = jsonDocument.RootElement.GetProperty("files").GetString();
@@ -797,6 +791,7 @@ namespace SafariBooksDownload
             {
                 searchContent = System.Web.HttpUtility.UrlEncode(searchContent);
 
+                string searchRequestUrl = "https://www.oreilly.com/search/api/search/?q=" + searchContent +
                                     "&type=book&rows=20&language_with_transcripts=en&tzOffset=-5.5&feature_flags=improveSearchFilters&report=true&isTopics=false";
                 CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
                 var response = await customHttpClientHandler.GetAsync(searchRequestUrl);
