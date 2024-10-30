@@ -373,7 +373,7 @@ namespace SafariBooksDownload
 
         private static async Task DownloadSingleFIle(Book selectedBook, List<ChappterInfo> chapters, string localEpubFolder, BookFile file)
         {
-            ChappterInfo selectedChapter = null;
+            ChappterInfo? selectedChapter = null;
             foreach (var chapter in chapters)
             {
                 if (chapter.content_url == file.url)
