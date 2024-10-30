@@ -123,8 +123,9 @@ namespace SafariBooksDownload
                 await File.WriteAllTextAsync(containerXmlPath, xmlString);
 
                 var folderName = Path.GetFileName(localEpubFolder);
-                var zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".zip");
-                var epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),
+                var localDirectoryName = Path.GetDirectoryName(localEpubFolder) ?? throw new ArgumentNullException("Path.GetDirectoryName(localEpubFolder)"); 
+                var zipPath = Path.Combine(localDirectoryName, selectedBook.product_id + ".zip");
+                var epubPath = Path.Combine(localDirectoryName,
                     selectedBook.product_id + ".epub");
 
 
