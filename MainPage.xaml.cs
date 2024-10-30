@@ -686,7 +686,7 @@ namespace SafariBooksDownload
                 var nextString = next.GetString();
                 if (nextString != null)
                 {
-                    await GetNextUrl(selectedBook, next.GetString(), totalFileCount, pageCount, downloaded);
+                    await GetNextUrl(selectedBook, nextString, totalFileCount, pageCount, downloaded);
                 }
             }
 
