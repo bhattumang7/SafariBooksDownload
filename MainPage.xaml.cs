@@ -92,13 +92,13 @@ namespace SafariBooksDownload
                 await PrepareListOfFiles(selectedBook);
 
                 ViewModel.DownloadProgress.ProgressLabel = "Fetching chapter list";
-                List<ChappterInfo> chapters = await FetchChapterInfo(selectedBook);
+                var chapters = await FetchChapterInfo(selectedBook);
 
                 var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.product_id);
 
 
                 Progress.ProgressBarValue = 0;
-                string opfPath = GetOpfFileFullPathFromBook(selectedBook.fileList);
+                var opfPath = GetOpfFileFullPathFromBook(selectedBook.fileList);
 
                 var s = await DownloadFileAsync(selectedBook, chapters, localEpubFolder);
 
@@ -106,27 +106,25 @@ namespace SafariBooksDownload
                 //var sourceCssFilePath = Path.Combine(FileSystem.AppDataDirectory, "Resources", "Raw", );
                 var targetOverrideCssFilePath = Path.Join(localEpubFolder, "override_v1.css");
                 var sourceFileContent = await ReadTextFileAsync("override_v1.css");
-                File.WriteAllText(targetOverrideCssFilePath, sourceFileContent);
+                await File.WriteAllTextAsync(targetOverrideCssFilePath, sourceFileContent);
 
                 await AddOverrideCssToManifest(Path.Join(localEpubFolder, opfPath));
 
                 // create meta-inf folder.
-                var containeXmlPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
-                string directoryPath = Path.GetDirectoryName(containeXmlPath);
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
+                var containerXmlPath = Path.Join(localEpubFolder, "/META-INF/container.xml");
+                string directoryPath = Path.GetDirectoryName(containerXmlPath) 
+                                       ?? throw new InvalidOperationException("Count not get directory name from containerXmlPath");
+                CreateDirectoryIfDoesNotExist(directoryPath);
 
                 var xmlString = """
                                 <?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>
                                 """;
                 xmlString = xmlString.Replace("OEBPS/content.opf", opfPath);
-                File.WriteAllText(containeXmlPath, xmlString);
+                await File.WriteAllTextAsync(containerXmlPath, xmlString);
 
-                string folderName = Path.GetFileName(localEpubFolder);
-                string zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".zip");
-                string epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),
+                var folderName = Path.GetFileName(localEpubFolder);
+                var zipPath = Path.Combine(Path.GetDirectoryName(localEpubFolder), selectedBook.product_id + ".zip");
+                var epubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),
                     selectedBook.product_id + ".epub");
 
 
@@ -185,6 +183,14 @@ namespace SafariBooksDownload
             {
                 EnableBookListView();
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace, " ok");
+            }
+        }
+
+        private static void CreateDirectoryIfDoesNotExist(string directoryPath)
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
             }
         }
 
