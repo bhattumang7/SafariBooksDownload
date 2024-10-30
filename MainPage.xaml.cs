@@ -408,7 +408,7 @@ namespace SafariBooksDownload
 
                 if (file.media_type == "text/css")
                 {
-                    string cssContent = File.ReadAllText(localPath);
+                    string cssContent = await File.ReadAllTextAsync(localPath);
 
                     // Set up AngleSharp configuration for CSS parsing
                     var config = Configuration.Default.WithCss();
@@ -428,6 +428,33 @@ namespace SafariBooksDownload
                 }
 
 
+                var styleSheetSection = $$"""
+                                          <style type="text/css">
+                                                                                     body {
+                                                                                       margin: 1em;
+                                                                                       background-color: transparent !important;
+                                                                                     }
+                                                                                     #sbo-rt-content * {
+                                                                                       text-indent: 0pt !important;
+                                                                                     }
+                                                                                     #sbo-rt-content .bq {
+                                                                                       margin-right: 1em !important;
+                                                                                     }
+                                                                                     {%- if should_support_kindle -%}
+                                                                                     #sbo-rt-content * {
+                                                                                       word-wrap: break-word !important;
+                                                                                       word-break: break-word !important;
+                                                                                     }
+                                                                                     #sbo-rt-content table,
+                                                                                     #sbo-rt-content pre {
+                                                                                       overflow-x: unset !important;
+                                                                                       overflow: unset !important;
+                                                                                       overflow-y: unset !important;
+                                                                                       white-space: pre-wrap !important;
+                                                                                     }
+                                                                                     {%- endif -%}
+                                                                                   </style>
+                                          """;
                 if (file.media_type == "text/html" || file.media_type == "application/xhtml+xml")
                 {
                     var pathAdjuster = new PathAdjuster(selectedBook.product_id);
@@ -446,41 +473,20 @@ namespace SafariBooksDownload
                     }
 
                     var adjustedHtml = await File.ReadAllTextAsync(localPath);
-                    var pointMessage = $$"""
-                                         <!DOCTYPE html>
-                                         <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2002/06/xhtml2/ http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd" xmlns:epub="http://www.idpf.org/2007/ops">
-                                          <title> {{selectedBook.title}} </title> 
-                                         <head>
-                                         <meta charset="utf-8" /> 
-                                         {{extraCssInfo}}
-                                                                     <style type="text/css">
-                                           body {
-                                             margin: 1em;
-                                             background-color: transparent !important;
-                                           }
-                                           #sbo-rt-content * {
-                                             text-indent: 0pt !important;
-                                           }
-                                           #sbo-rt-content .bq {
-                                             margin-right: 1em !important;
-                                           }
-                                           {%- if should_support_kindle -%}
-                                           #sbo-rt-content * {
-                                             word-wrap: break-word !important;
-                                             word-break: break-word !important;
-                                           }
-                                           #sbo-rt-content table,
-                                           #sbo-rt-content pre {
-                                             overflow-x: unset !important;
-                                             overflow: unset !important;
-                                             overflow-y: unset !important;
-                                             white-space: pre-wrap !important;
-                                           }
-                                           {%- endif -%}
-                                         </style></head>
-                                         <body><div class="ucvMode-white"><div id="book-content">{{adjustedHtml}}</div></div></body>
-                                         </html>
-                                         """;
+                    var pointMessage = $"""
+                                        <!DOCTYPE html>
+                                        <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2002/06/xhtml2/ http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd" xmlns:epub="http://www.idpf.org/2007/ops">
+                                         <title> {selectedBook.title} </title> 
+                                        <head>
+                                        <meta charset="utf-8" /> 
+                                        {extraCssInfo}
+
+                                        """ + styleSheetSection + $"""
+
+                                                                   </head>
+                                                                   <body><div class="ucvMode-white"><div id="book-content">{adjustedHtml}</div></div></body>
+                                                                   </html>
+                                                                   """;
 
                     var htmlDoc = new HtmlDocument();
                     htmlDoc.LoadHtml(pointMessage);
