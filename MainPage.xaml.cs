@@ -630,7 +630,7 @@ namespace SafariBooksDownload
             int totalFilesCount = jsonDocument.RootElement.GetProperty("count").GetInt32();
             ViewModel.DownloadProgress.DownloadLabel = selectedBook.title + " - (Getting list of files for this book)";
             ViewModel.DownloadProgress.ProgressLabel =
-                "Getting list of files that needs to be dowloaded for " + selectedBook.title;
+                "Getting list of files that needs to be downloaded for " + selectedBook.title;
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 ViewModel.DownloadProgress.ProgressLabel =
