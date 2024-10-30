@@ -16,17 +16,17 @@ namespace SafariBooksDownload
     {
         public string ProgressText = "";
 
-        public DownloadViewModel Progress { get; set; } = new DownloadViewModel();
+        private DownloadViewModel Progress { get; set; }
 
-        public MainViewModel ViewModel { get; set; }
+        private MainViewModel ViewModel { get; set; }
 
 
         public MainPage()
         {
             InitializeComponent();
 
-            Progress = new DownloadViewModel();
-            ViewModel = new MainViewModel();
+            this.Progress = new DownloadViewModel();
+            this.ViewModel = new MainViewModel();
             ViewModel.RetainFolder = false;
             BindingContext = ViewModel;
             downloadbtn.IsEnabled = false;
