@@ -695,7 +695,7 @@ namespace SafariBooksDownload
 
         private async Task<List<JsonNodeInfo>> GetFlatTableOfContent(Book selectedBook)
         {
-            List<JsonNodeInfo> tableOfCOntent = new List<JsonNodeInfo>();
+            List<JsonNodeInfo> tableOfContent = new List<JsonNodeInfo>();
             string requestUrl = selectedBook.table_of_contents;
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
             var response = await customHttpClientHandler.GetAsync(requestUrl);
