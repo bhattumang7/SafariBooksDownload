@@ -14,8 +14,6 @@ namespace SafariBooksDownload
 {
     public partial class MainPage : ContentPage
     {
-        public string ProgressText = "";
-
         private DownloadViewModel Progress { get; set; }
 
         private MainViewModel ViewModel { get; set; }
