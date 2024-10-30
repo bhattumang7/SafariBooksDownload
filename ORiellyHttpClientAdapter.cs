@@ -30,14 +30,6 @@ namespace SafariBooksDownload
             client.DefaultRequestHeaders.Add("Accept", @"*/*"); // Example 
             client.DefaultRequestHeaders.Add("Accept-Encoding", @"deflate"); // Example 
             client.DefaultRequestHeaders.Add("Referer", @"https://learning.oreilly.com/"); // Example
-            //client.DefaultRequestHeaders.Add("Host", @"www.oreilly.com"); // Example
-
-
-            //client.DefaultRequestHeaders.Accept.Clear();
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-
-
         }
 
         public async Task<HttpResponseMessage> GetAsync(string url)
