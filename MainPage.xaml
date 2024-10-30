@@ -55,7 +55,7 @@
                                         <Label Text="{Binding publication_date}" FontSize="Micro" />
                                     </StackLayout>
                                 </StackLayout>
-                                <Button HeightRequest="50" Text="Get" Clicked="downloadBook" CommandParameter="{Binding .}" />
+                                <Button HeightRequest="50" Text="Get" Clicked="DownloadBook" CommandParameter="{Binding .}" />
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>
@@ -67,9 +67,9 @@
             <Label IsVisible="{Binding SahreButtonVisible}" x:Name="downloadPathSuccessLabel" Text="{Binding LastFileDownloadPath}" />
 
             <HorizontalStackLayout Spacing="10">
-                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="shareDownloadedFile" Text="Share file" Clicked="shareFile" />
-                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="deleteLocalFile" Text="Delete file" Clicked="deleteFile"/>
-                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="closeShareWidget"/>
+                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="shareDownloadedFile" Text="Share file" Clicked="ShareFile" />
+                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="deleteLocalFile" Text="Delete file" Clicked="DeleteFile"/>
+                <Button IsVisible="{Binding SahreButtonVisible}" x:Name="closeTheShareButton" Text="Close" Clicked="CloseShareWidget"/>
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
