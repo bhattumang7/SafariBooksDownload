@@ -458,47 +458,41 @@ namespace SafariBooksDownload
                     }
 
                     string adjustedHtml = File.ReadAllText(localPath);
-                    var pointMessage = "<!DOCTYPE html>\n" +
-                        "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\"" +
-                        " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
-                        " xsi:schemaLocation=\"http://www.w3.org/2002/06/xhtml2/" +
-                        " http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd\"" +
-                        " xmlns:epub=\"http://www.idpf.org/2007/ops\">\n" +
-                        $" <title> {selectedBook.title} </title> \n" +
-                        "<head>\n" +
-                        "<meta charset=\"utf-8\" /> \n" +
-                        //"<link href=\"override_v1.css\" rel=\"stylesheet\" type=\"text/css\" /> \n" +
-                        $"{extraCssInfo}\n" +
-                        """
-                                                        <style type="text/css">
-                              body {
-                                margin: 1em;
-                                background-color: transparent !important;
-                              }
-                              #sbo-rt-content * {
-                                text-indent: 0pt !important;
-                              }
-                              #sbo-rt-content .bq {
-                                margin-right: 1em !important;
-                              }
-                              {%- if should_support_kindle -%}
-                              #sbo-rt-content * {
-                                word-wrap: break-word !important;
-                                word-break: break-word !important;
-                              }
-                              #sbo-rt-content table,
-                              #sbo-rt-content pre {
-                                overflow-x: unset !important;
-                                overflow: unset !important;
-                                overflow-y: unset !important;
-                                white-space: pre-wrap !important;
-                              }
-                              {%- endif -%}
-                            </style>
-                            """ +
-
-                            "</head>\n" +
-                            $"<body><div class=\"ucvMode-white\"><div id=\"book-content\">{adjustedHtml}</div></div></body>\n</html>";
+                    var pointMessage = $$"""
+                                         <!DOCTYPE html>
+                                         <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2002/06/xhtml2/ http://www.w3.org/MarkUp/SCHEMA/xhtml2.xsd" xmlns:epub="http://www.idpf.org/2007/ops">
+                                          <title> {{selectedBook.title}} </title> 
+                                         <head>
+                                         <meta charset="utf-8" /> 
+                                         {{extraCssInfo}}
+                                                                     <style type="text/css">
+                                           body {
+                                             margin: 1em;
+                                             background-color: transparent !important;
+                                           }
+                                           #sbo-rt-content * {
+                                             text-indent: 0pt !important;
+                                           }
+                                           #sbo-rt-content .bq {
+                                             margin-right: 1em !important;
+                                           }
+                                           {%- if should_support_kindle -%}
+                                           #sbo-rt-content * {
+                                             word-wrap: break-word !important;
+                                             word-break: break-word !important;
+                                           }
+                                           #sbo-rt-content table,
+                                           #sbo-rt-content pre {
+                                             overflow-x: unset !important;
+                                             overflow: unset !important;
+                                             overflow-y: unset !important;
+                                             white-space: pre-wrap !important;
+                                           }
+                                           {%- endif -%}
+                                         </style></head>
+                                         <body><div class="ucvMode-white"><div id="book-content">{{adjustedHtml}}</div></div></body>
+                                         </html>
+                                         """;
 
                     var htmlDoc = new HtmlDocument();
                     htmlDoc.LoadHtml(pointMessage);
