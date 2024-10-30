@@ -312,7 +312,6 @@ namespace SafariBooksDownload
 
         private async Task<List<ChappterInfo>> FetchChapterInfo(Book selectedBook)
         {
-            List<ChappterInfo> chappterInfos = new List<ChappterInfo>();
             string requestUrl = "https://learning.oreilly.com/api/v2/epub-chapters/?epub_identifier=urn:orm:book:" +
                                 selectedBook.product_id;
             CustomHttpClientHandler customHttpClientHandler = new CustomHttpClientHandler();
@@ -331,9 +330,8 @@ namespace SafariBooksDownload
                 PropertyNameCaseInsensitive = true,
                 WriteIndented = true,
             };
-
-            chappterInfos = JsonSerializer.Deserialize<List<ChappterInfo>>(results, options);
-            return chappterInfos;
+            
+            return JsonSerializer.Deserialize<List<ChappterInfo>>(results, options) ?? throw new InvalidOperationException("from FetchChapterInfo");
         }
 
         private async Task<string> DownloadFileAsync(Book selectedBook, List<ChappterInfo> chapters,
