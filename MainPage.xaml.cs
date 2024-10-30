@@ -143,10 +143,7 @@ namespace SafariBooksDownload
                 Progress.ProgressBarValue = 0.3d;
                 Progress.ProgressLabel = "Creating epub";
 
-                if (File.Exists(epubPath))
-                {
-                    File.Delete(epubPath);
-                }
+                DeleteFileIfExists(epubPath);
 
                 // Rename zip file to .epub
                 File.Move(zipPath, epubPath);
@@ -156,11 +153,8 @@ namespace SafariBooksDownload
                 {
                     string newEpubPath = Path.Combine(Path.GetDirectoryName(localEpubFolder),
                         selectedBook.getTitle_file_name_safe() + ".epub");
-                    if (File.Exists(newEpubPath))
-                    {
-                        File.Delete(newEpubPath);
-                    }
-
+                    DeleteFileIfExists(newEpubPath);
+                    
                     File.Move(epubPath, newEpubPath);
 
                     epubPath = newEpubPath; // Update epubPath to the new name if successful
@@ -184,6 +178,14 @@ namespace SafariBooksDownload
             {
                 EnableBookListView();
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace, " ok");
+            }
+        }
+
+        private static void DeleteFileIfExists(string epubPath)
+        {
+            if (File.Exists(epubPath))
+            {
+                File.Delete(epubPath);
             }
         }
 
