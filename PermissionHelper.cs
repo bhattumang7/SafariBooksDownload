@@ -1,123 +1,55 @@
 #if ANDROID
-using Android;
-using Android.Content;                    // For Intent and other context-related classes
-using Android.Provider;                   // For Settings.ActionManageAppAllFilesAccessPermission
-using Android.Content.PM;
+using Android.Content;
+using Android.Provider;
 using Android.OS;
-using AndroidX.Core.Content;
-using AndroidX.Core.App;
+using AndroidX.Activity.Result;
+using AndroidX.Activity.Result.Contract;
 #endif
 using Microsoft.Maui.ApplicationModel;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
 
 namespace SafariBooksDownload
 {
-    public class PermissionHelper
+    public static class PermissionHelper
     {
-        private const int RequestCode = 1000;
-        private static TaskCompletionSource<bool> permissionTcs;
-
-        public static async Task<bool> RequestStoragePermissions()
-        {
-            if (DeviceInfo.Platform == DevicePlatform.Android)
-            {
 #if ANDROID
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.R)
-                {
-                    var result = Android.OS.Environment.IsExternalStorageManager;
-                    if (!result)
-                    {
-                        var manage = Settings.ActionManageAppAllFilesAccessPermission;
-                        Intent intent = new Intent(manage);
-                        Android.Net.Uri uri = Android.Net.Uri.Parse("package:" + AppInfo.Current.PackageName);
-                        intent.SetData(uri);
-                        Platform.CurrentActivity.StartActivity(intent);
-                    }
-                    return result;
-                } else if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
-                {
-                    // Show alert before requesting permissions
-                    await Application.Current.MainPage.DisplayAlert("Permission Request", "Requesting storage permissions...", "OK");
-                    return await RequestRuntimePermissions();
-                }
-                else
-                {
-                    // Inform user that permissions are granted by default on older Android versions
-                    await Application.Current.MainPage.DisplayAlert("Permissions Granted", "Permissions are granted by default on Android versions older than 6.0.", "OK");
-                    return true; // Permissions assumed to be granted for versions below Android 6.0
-                }
-#endif
-            }
+        private static ActivityResultLauncher? _launcher;
+        private static TaskCompletionSource<bool>? _pending;
 
-            // If not Android, no need to request permissions
-            await Application.Current.MainPage.DisplayAlert("Unsupported Platform", "Permission request only needed on Android.", "OK");
-            return false;
+        public static void RegisterLauncher(AndroidX.Activity.ComponentActivity activity)
+        {
+            _launcher = activity.RegisterForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ResultCallback(_ => _pending?.TrySetResult(Android.OS.Environment.IsExternalStorageManager)));
         }
 
-        private static async Task<bool> RequestRuntimePermissions()
+        private sealed class ResultCallback : Java.Lang.Object, IActivityResultCallback
         {
-#if ANDROID
-            var readPermissionStatus = ContextCompat.CheckSelfPermission(Platform.CurrentActivity, Manifest.Permission.ReadExternalStorage);
-            var writePermissionStatus = ContextCompat.CheckSelfPermission(Platform.CurrentActivity, Manifest.Permission.WriteExternalStorage);
-
-            if (readPermissionStatus != (int)Permission.Granted || writePermissionStatus != (int)Permission.Granted)
-            {
-                // Inform the user that permissions are needed
-                await Application.Current.MainPage.DisplayAlert("Permission Needed", "Storage permissions are required for the app to access files.", "OK");
-
-                permissionTcs = new TaskCompletionSource<bool>();
-
-                // Request both Read and Write permissions
-                ActivityCompat.RequestPermissions(
-                    Platform.CurrentActivity,
-                    new string[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage },
-                    RequestCode
-                );
-
-                // Await the result of the user's decision
-                return await permissionTcs.Task;
-            }
-
-            // Inform user that permissions are already granted
-            await Application.Current.MainPage.DisplayAlert("Permissions Granted", "Storage permissions are already granted.", "OK");
-#endif
-            return true;
-        }
-#if ANDROID
-        public static async void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
-        {
-
-            if (requestCode == RequestCode)
-            {
-                bool allGranted = true;
-
-                foreach (var result in grantResults)
-                {
-                    if (result != Permission.Granted)
-                    {
-                        allGranted = false;
-                        break;
-                    }
-                }
-
-                if (allGranted)
-                {
-                    // Notify that permissions were granted
-                    await Application.Current.MainPage.DisplayAlert("Permissions Granted", "Storage permissions have been granted.", "OK");
-                }
-                else
-                {
-                    // Notify that permissions were denied
-                    await Application.Current.MainPage.DisplayAlert("Permissions Denied", "Storage permissions are required for the app to function.", "OK");
-                }
-
-                // Set the result to the TaskCompletionSource
-                permissionTcs?.SetResult(allGranted);
-            }
+            private readonly Action<Java.Lang.Object?> _onResult;
+            public ResultCallback(Action<Java.Lang.Object?> onResult) => _onResult = onResult;
+            public void OnActivityResult(Java.Lang.Object? result) => _onResult(result);
         }
 #endif
 
+        public static Task<bool> RequestStoragePermissions()
+        {
+#if ANDROID
+            if (Build.VERSION.SdkInt < BuildVersionCodes.R)
+                return Task.FromResult(true);
+
+            if (Android.OS.Environment.IsExternalStorageManager)
+                return Task.FromResult(true);
+
+            if (_launcher is null)
+                return Task.FromResult(false);
+
+            _pending = new TaskCompletionSource<bool>();
+            var intent = new Intent(Settings.ActionManageAppAllFilesAccessPermission)
+                .SetData(Android.Net.Uri.Parse("package:" + AppInfo.Current.PackageName));
+            _launcher.Launch(intent);
+            return _pending.Task;
+#else
+            return Task.FromResult(true);
+#endif
+        }
     }
-
 }

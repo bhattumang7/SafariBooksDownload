@@ -43,8 +43,11 @@ namespace SafariBooksDownload
             if (!hasPermission)
             {
                 await DisplayAlert("Permission Required", "Storage access is required to proceed.", "OK");
-                // Handle the case where permission is not granted (e.g., disable file access features)
+                return;
             }
+
+            Config.EnsureBooksPathExists();
+            Config.SweepOrphanWorkFolders();
         }
         
         private void OnSearchTextCompleted(object sender, EventArgs e)
@@ -72,6 +75,8 @@ namespace SafariBooksDownload
 
         private async void DownloadBook(object sender, EventArgs e)
         {
+            string? localEpubFolder = null;
+            string? markerPath = null;
             try
             {
                 progressBar.IsVisible = true;
@@ -94,7 +99,10 @@ namespace SafariBooksDownload
                 ViewModel.DownloadProgress.ProgressLabel = "Fetching chapter list";
                 var chapters = await FetchChapterInfo(selectedBook);
 
-                var localEpubFolder = Path.Join(Config.BooksPath, selectedBook.product_id);
+                localEpubFolder = Path.Join(Config.BooksPath, selectedBook.product_id);
+                CreateDirectoryIfDoesNotExist(localEpubFolder);
+                markerPath = Path.Combine(localEpubFolder, Config.WorkInProgressMarker);
+                File.WriteAllText(markerPath, "");
 
 
                 Progress.ProgressBarValue = 0;
@@ -166,6 +174,8 @@ namespace SafariBooksDownload
                 ViewModel.LastFileDownloadName = selectedBook.getTitle_file_name_safe() + ".epub";
                 ViewModel.LastFileDownloadPath = epubPath;
 
+                DeleteFileIfExists(markerPath!);
+
                 if (!ViewModel.RetainFolder)
                 {
                     Directory.Delete(localEpubFolder, recursive: true);
@@ -177,6 +187,16 @@ namespace SafariBooksDownload
             {
                 EnableBookListView();
                 await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace, " ok");
+            }
+            finally
+            {
+                if (localEpubFolder != null
+                    && Directory.Exists(localEpubFolder)
+                    && File.Exists(Path.Combine(localEpubFolder, Config.WorkInProgressMarker)))
+                {
+                    try { Directory.Delete(localEpubFolder, recursive: true); }
+                    catch { /* best-effort cleanup on failure */ }
+                }
             }
         }
 
