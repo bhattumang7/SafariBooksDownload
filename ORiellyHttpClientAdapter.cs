@@ -39,8 +39,13 @@ namespace SafariBooksDownload
                 client.DefaultRequestHeaders.Add("Host", new Uri(url).Host);
               
                 var response = await client.GetAsync(url);
-             
+
                 UpdateCookies(response);  // Update cookies after the request
+
+                if ((int)response.StatusCode >= 300)
+                    throw new InvalidOperationException(
+                        $"Unexpected status {(int)response.StatusCode} for {url} — session may be expired (auto-redirect is off, so 3xx is treated as auth failure).");
+
                 return response;
             }
             catch (HttpRequestException e)

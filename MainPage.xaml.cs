@@ -421,6 +421,10 @@ namespace SafariBooksDownload
                 ORiellyHttpClientAdapter oRiellyHttpClientAdapter = new ORiellyHttpClientAdapter();
                 HttpResponseMessage response = await oRiellyHttpClientAdapter.GetAsync(file.url);
 
+                if (response == null)
+                    throw new InvalidOperationException($"Failed to fetch {file.url} — null response (session may be expired).");
+                response.EnsureSuccessStatusCode();
+
                 byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
 
 
