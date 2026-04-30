@@ -1,0 +1,28 @@
+# Build hints (Codespaces / Linux)
+
+.NET MAUI project. Only `net10.0-android` builds on Linux; iOS/macCatalyst targets are gated to macOS in the csproj.
+
+## One-time setup
+```bash
+dotnet workload install android maui-android
+# Android SDK (~$HOME/android-sdk) — install platforms;android-36 + build-tools;36.0.0 via sdkmanager
+# Use JDK 21 (NOT 25, which is the codespace default)
+export JAVA_HOME=/usr/local/sdkman/candidates/java/21.0.10-ms
+export ANDROID_HOME=$HOME/android-sdk
+```
+
+## Debug build
+```bash
+dotnet build -f net10.0-android
+```
+
+## Release APK (memory-constrained host)
+The 8 GB codespace OOM-kills ILLink when it runs once per RID in parallel. Override `RuntimeIdentifiers` (plural) AND `RuntimeIdentifier` to a single arch, force `-m:1`. Swap files don't work on the codespace overlayfs.
+
+```bash
+dotnet publish -f net10.0-android -c Release \
+  -p:RuntimeIdentifiers=android-arm64 -p:RuntimeIdentifier=android-arm64 \
+  -p:AndroidPackageFormat=apk -m:1
+```
+
+Output: `bin/Release/net10.0-android/android-arm64/publish/*-Signed.apk` (~22 MB, debug-signed).
