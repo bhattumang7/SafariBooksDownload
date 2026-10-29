@@ -22,11 +22,12 @@ namespace SafariBooksDownload
     		builder.Logging.AddDebug();
 #endif
 
+            builder.Services.AddSingleton<GlobalExceptionHandler>();
+
             var app = builder.Build();
 
-            // Register the global exception handler
-            var logger = app.Services.GetRequiredService<ILogger<GlobalExceptionHandler>>();
-            new GlobalExceptionHandler(logger);
+            // Resolving the singleton registers the global exception handler
+            app.Services.GetRequiredService<GlobalExceptionHandler>();
 
             return app;
         }

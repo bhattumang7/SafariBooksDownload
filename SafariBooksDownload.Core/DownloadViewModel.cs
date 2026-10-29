@@ -9,9 +9,9 @@ namespace SafariBooksDownload
 {
     public class DownloadViewModel : INotifyPropertyChanged
     {
-        private string _downloadLabel;
+        private string _downloadLabel = "";
         private double _progressBarValue;
-        private string _progressLabel;
+        private string _progressLabel = "";
 
         public string DownloadLabel
         {
@@ -43,7 +43,7 @@ namespace SafariBooksDownload
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
         {

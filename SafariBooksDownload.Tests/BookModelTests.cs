@@ -69,7 +69,7 @@ public class ProgressMathTests
     [InlineData(50, 100, 50)]
     [InlineData(8, 30, 26)]
     [InlineData(5, 0, 0)]
-    public void FilePercent_UsesIntegerDivision(int current, int total, double expected) =>
+    public void FilePercent_UsesIntegerDivision(int current, int total, int expected) =>
         Assert.Equal(expected, ProgressMath.FilePercent(current, total));
 
     [Fact]
@@ -81,4 +81,43 @@ public class ProgressMathTests
     [InlineData(9, 4, 1)]
     public void PageFraction_IsClampedToUnitRange(int done, int pages, double expected) =>
         Assert.Equal(expected, ProgressMath.PageFraction(done, pages));
+}
+
+public class BookFileTests
+{
+    [Fact]
+    public void Deserializes_EveryField()
+    {
+        var file = System.Text.Json.JsonSerializer.Deserialize<BookFile>("""
+            {"ourn":"o","url":"u","full_path":"p","filename":"f","filename_ext":"e","media_type":"m","has_mathml":true,
+             "kind":"k","created_time":"2020-01-02T03:04:05Z","last_modified_time":"2021-01-02T03:04:05Z",
+             "virtual_pages":3,"file_size":99,"epub_archive":"a"}
+            """)!;
+
+        Assert.Equal(("o", "u", "p", "f", "e", "m", "k", "a"),
+            (file.ourn, file.url, file.full_path, file.filename, file.filename_ext, file.media_type, file.kind, file.epub_archive));
+        Assert.True(file.has_mathml);
+        Assert.Equal((3, 99), (file.virtual_pages, file.file_size));
+        Assert.Equal(2020, file.created_time.Year);
+        Assert.Equal(2021, file.last_modified_time.Year);
+    }
+}
+
+public class JsonNodeInfoTests
+{
+    [Fact]
+    public void RoundTripsEveryField()
+    {
+        var node = new JsonNodeInfo
+        {
+            depth = 2, url = "u", fragment = "f", filename = "n", order = 4, label = "l",
+            full_path = "p", href = "h", media_type = "m", children = [new JsonNodeInfo { url = "c" }],
+        };
+
+        var copy = System.Text.Json.JsonSerializer.Deserialize<JsonNodeInfo>(System.Text.Json.JsonSerializer.Serialize(node))!;
+
+        Assert.Equal(("u", "f", "n", "l", "p", "h", "m"), (copy.url, copy.fragment, copy.filename, copy.label, copy.full_path, copy.href, copy.media_type));
+        Assert.Equal((2, 4), (copy.depth, copy.order));
+        Assert.Equal("c", Assert.Single(copy.children).url);
+    }
 }

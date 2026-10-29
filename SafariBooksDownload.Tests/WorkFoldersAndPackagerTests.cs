@@ -27,7 +27,11 @@ public class WorkFoldersTests
     {
         using var dir = new TempDir();
 
-        WorkFolders.SweepOrphans(dir.Combine("does-not-exist"));
+        var missing = dir.Combine("does-not-exist");
+
+        WorkFolders.SweepOrphans(missing);
+
+        Assert.False(Directory.Exists(missing));
     }
 }
 

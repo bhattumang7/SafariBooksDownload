@@ -90,3 +90,27 @@ public class EpubManifestTests
         Assert.Throws<FileNotFoundException>(() => EpubManifest.AddOverrideCssToFile(dir.Combine("none.opf"), "x.css"));
     }
 }
+
+public class EpubManifestExistingItemTests
+{
+    [Fact]
+    public void AddOverrideCss_WhenAnUnnamespacedItemWithTheIdExists_ReturnsFalse()
+    {
+        var doc = XDocument.Parse($$"""<package xmlns="http://www.idpf.org/2007/opf"><manifest><item xmlns="" id="{{EpubManifest.OverrideItemId}}" href="x.css"/></manifest></package>""");
+
+        Assert.False(EpubManifest.AddOverrideCss(doc, "override_v1.css"));
+    }
+
+    [Fact]
+    public void AddOverrideCssToFile_WhenNothingToAdd_LeavesTheFileUntouched()
+    {
+        using var dir = new TempDir();
+        var path = dir.Combine("content.opf");
+        var original = $$"""<package xmlns="http://www.idpf.org/2007/opf"><manifest><item xmlns="" id="{{EpubManifest.OverrideItemId}}" href="x.css"/></manifest></package>""";
+        File.WriteAllText(path, original);
+
+        EpubManifest.AddOverrideCssToFile(path, "override_v1.css");
+
+        Assert.Equal(original, File.ReadAllText(path));
+    }
+}

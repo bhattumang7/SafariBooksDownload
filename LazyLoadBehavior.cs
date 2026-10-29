@@ -16,7 +16,7 @@ namespace SafariBooksDownload
             set => SetValue(SourceProperty, value);
         }
 
-        private Image _associatedImage;
+        private Image? _associatedImage;
 
         protected override void OnAttachedTo(Image bindable)
         {
@@ -32,9 +32,9 @@ namespace SafariBooksDownload
             _associatedImage = null;
         }
 
-        private async void OnImagePropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnImagePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName && _associatedImage.IsVisible)
+            if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName && _associatedImage?.IsVisible == true)
             {
                 // Load image asynchronously when the Image becomes visible
                 _associatedImage.Source = ImageSource.FromUri(new Uri(Source));

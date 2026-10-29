@@ -8,7 +8,7 @@ namespace SafariBooksDownload
 
         private MainViewModel ViewModel { get; set; }
 
-        private readonly IOReillyClient _client = new OReillyClient();
+        private readonly IOReillyClient _client = new OReillyClient(Config.COOKIES_FILE);
 
 
         public MainPage()
@@ -34,7 +34,7 @@ namespace SafariBooksDownload
 
             if (!hasPermission)
             {
-                await DisplayAlert("Permission Required", "Storage access is required to proceed.", "OK");
+                await DisplayAlertAsync("Permission Required", "Storage access is required to proceed.", "OK");
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace SafariBooksDownload
             catch (Exception ex)
             {
                 ViewModel.searchInProgress = false;
-                await DisplayAlert("Error occured", ex.Message + "\r\n" + ex.StackTrace, " ok");
+                await ShowErrorAsync(ex);
             }
         }
 
@@ -89,7 +89,7 @@ namespace SafariBooksDownload
             catch (Exception exception)
             {
                 EnableBookListView();
-                await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace, " ok");
+                await ShowErrorAsync(exception);
             }
         }
 
@@ -111,7 +111,7 @@ namespace SafariBooksDownload
             }
             catch (Exception exception)
             {
-                await DisplayAlert("Error occured", exception.Message + "\r\n" + exception.StackTrace, " ok");
+                await ShowErrorAsync(exception);
             }
 
             ViewModel.LastFileDownloadPath = "";
@@ -141,7 +141,10 @@ namespace SafariBooksDownload
             progressLabel.IsVisible = false;
         }
 
-        public async Task<string> ReadTextFileAsync(string fileName)
+        private Task ShowErrorAsync(Exception exception) =>
+            DisplayAlertAsync("Error occured", exception.Message + "\r\n" + exception.StackTrace, " ok");
+
+        private static async Task<string> ReadTextFileAsync(string fileName)
         {
             try
             {
@@ -162,7 +165,11 @@ namespace SafariBooksDownload
             {
                 if (e.Result == WebNavigationResult.Success)
                 {
-                    var webView = sender as WebView;
+                    if (sender is not WebView webView)
+                    {
+                        return;
+                    }
+
                     if (e.Url == "https://learning.oreilly.com/profile/")
                     {
                         // execute javascript in browser control to get the cookie if navigation to profile page was sucess
@@ -170,7 +177,7 @@ namespace SafariBooksDownload
                             "JSON.stringify(document.cookie.split(';').map(c => c.split('=')).map(i => [i[0].trim(), i[1].trim()]).reduce((r, i) => {r[i[0]] = i[1]; return r;}, {}))");
                         output = Regex.Unescape(output);
 
-                        File.WriteAllText(Config.COOKIES_FILE, output);
+                        await File.WriteAllTextAsync(Config.COOKIES_FILE, output);
                         webView.IsVisible = false;
                         downloadbtn.IsEnabled = true;
                     }
@@ -178,7 +185,7 @@ namespace SafariBooksDownload
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error occured", ex.Message + "\r\n" + ex.StackTrace, " ok");
+                await ShowErrorAsync(ex);
             }
         }
 
@@ -189,7 +196,7 @@ namespace SafariBooksDownload
             var books = OReillyApi.ParseSearchResults(stringResponse);
             if (books.Count == 0)
             {
-                await DisplayAlert("Book not found", "No book was found for " + searchContent, " ok");
+                await DisplayAlertAsync("Book not found", "No book was found for " + searchContent, " ok");
             }
 
             ViewModel.Books.Clear();

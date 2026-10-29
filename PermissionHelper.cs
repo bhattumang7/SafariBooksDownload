@@ -19,7 +19,7 @@ namespace SafariBooksDownload
         {
             _launcher = activity.RegisterForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ResultCallback(_ => _pending?.TrySetResult(Android.OS.Environment.IsExternalStorageManager)));
+                new ResultCallback(_ => _pending?.TrySetResult(OperatingSystem.IsAndroidVersionAtLeast(30) && Android.OS.Environment.IsExternalStorageManager)));
         }
 
         private sealed class ResultCallback : Java.Lang.Object, IActivityResultCallback
@@ -33,7 +33,7 @@ namespace SafariBooksDownload
         public static Task<bool> RequestStoragePermissions()
         {
 #if ANDROID
-            if (Build.VERSION.SdkInt < BuildVersionCodes.R)
+            if (!OperatingSystem.IsAndroidVersionAtLeast(30))
                 return Task.FromResult(true);
 
             if (Android.OS.Environment.IsExternalStorageManager)

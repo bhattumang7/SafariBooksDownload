@@ -12,6 +12,9 @@ namespace SafariBooksDownload
             WriteIndented = true,
         };
 
+        private static string Text(JsonElement element, string property) =>
+            element.GetProperty(property).GetString() ?? "";
+
         public static string SearchUrl(string searchTerm) =>
             "https://www.oreilly.com/search/api/search/?q=" + System.Web.HttpUtility.UrlEncode(searchTerm) +
             "&type=book&rows=20&language_with_transcripts=en&tzOffset=-5.5&feature_flags=improveSearchFilters&report=true&isTopics=false";
@@ -32,15 +35,14 @@ namespace SafariBooksDownload
             {
                 books.Add(new Book
                 {
-                    title = entry.GetProperty("title").GetString(),
-                    product_id = entry.GetProperty("product_id").GetString(),
-                    cover_image = entry.GetProperty("cover_image").GetString(),
-                    description = entry.GetProperty("description").GetString(),
-                    url = entry.GetProperty("url").GetString(),
+                    title = Text(entry, "title"),
+                    product_id = Text(entry, "product_id"),
+                    cover_image = Text(entry, "cover_image"),
+                    description = Text(entry, "description"),
+                    url = Text(entry, "url"),
                     authors = string.Join(", ",
-                        entry.GetProperty("authors").EnumerateArray().Select(author => author.GetString())),
-                    publication_date = entry.GetProperty("custom_attributes").GetProperty("publication_date")
-                        .GetString()
+                        entry.GetProperty("authors").EnumerateArray().Select(author => author.GetString() ?? "")),
+                    publication_date = Text(entry.GetProperty("custom_attributes"), "publication_date")
                 });
             }
 
@@ -50,9 +52,9 @@ namespace SafariBooksDownload
         public static void PopulateBookDetails(Book book, string json)
         {
             using var document = JsonDocument.Parse(json);
-            book.isbn = document.RootElement.GetProperty("isbn").GetString();
-            book.table_of_contents = document.RootElement.GetProperty("table_of_contents").GetString();
-            book.files_URL = document.RootElement.GetProperty("files").GetString();
+            book.isbn = Text(document.RootElement, "isbn");
+            book.table_of_contents = Text(document.RootElement, "table_of_contents");
+            book.files_URL = Text(document.RootElement, "files");
         }
 
         public static List<ChappterInfo> ParseChapters(string json)

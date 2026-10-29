@@ -8,8 +8,8 @@ namespace SafariBooksDownload
 {
     public class ChappterInfo
     {
-        public String content_url { get; set; }
-        public Assets related_assets {get;set;}
+        public String content_url { get; set; } = "";
+        public Assets related_assets { get; set; } = new();
     }
     public class Assets
     {

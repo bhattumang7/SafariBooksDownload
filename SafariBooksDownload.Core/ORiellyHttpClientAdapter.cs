@@ -1,23 +1,23 @@
 ﻿using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SafariBooksDownload
 {
 
-    public class ORiellyHttpClientAdapter 
+    public class ORiellyHttpClientAdapter
     {
+        public const string SafariHost = "learning.oreilly.com";
+        public static string SafariBaseUrl => "https://" + SafariHost;
+
         private readonly HttpClient client;
         private readonly CookieContainer cookieContainer;
+        private readonly string cookiesFile;
 
-        public ORiellyHttpClientAdapter()
+        public ORiellyHttpClientAdapter(string cookiesFile)
         {
+            this.cookiesFile = cookiesFile;
             cookieContainer = new CookieContainer();
-            LoadCookiesFromFile(Config.COOKIES_FILE);
+            LoadCookiesFromFile(cookiesFile);
 
             var handler = new HttpClientHandler
             {
@@ -29,10 +29,10 @@ namespace SafariBooksDownload
             client = new HttpClient(handler);
             client.DefaultRequestHeaders.Add("Accept", @"*/*"); // Example 
             client.DefaultRequestHeaders.Add("Accept-Encoding", @"deflate"); // Example 
-            client.DefaultRequestHeaders.Add("Referer", @"https://learning.oreilly.com/"); // Example
+            client.DefaultRequestHeaders.Add("Referer", SafariBaseUrl + "/"); // Example
         }
 
-        public async Task<HttpResponseMessage> GetAsync(string url)
+        public async Task<HttpResponseMessage?> GetAsync(string url)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace SafariBooksDownload
             }
         }
 
-        public async Task<HttpResponseMessage> PostAsync(string url, HttpContent content)
+        public async Task<HttpResponseMessage?> PostAsync(string url, HttpContent content)
         {
             try
             {
@@ -71,31 +71,23 @@ namespace SafariBooksDownload
         }
 
 
-        private string GetCookiesHeader()
-        {
-            var cookies = cookieContainer.GetCookies(new Uri(Config.SAFARI_BASE_URL));
-            return string.Join("; ", cookies.Cast<Cookie>().Select(c => $"{c.Name}={c.Value}"));
-        }
-
         private void LoadCookiesFromFile(string filePath)
         {
-            //if (File.Exists(filePath))
-            {
-                var cookieData = File.ReadAllText(filePath);
-                var cookies = JsonConvert.DeserializeObject<Dictionary<string, string>>(cookieData);
+            var cookieData = File.ReadAllText(filePath);
+            var cookies = JsonConvert.DeserializeObject<Dictionary<string, string>>(cookieData)
+                          ?? new Dictionary<string, string>();
 
-                foreach (var cookie in cookies)
-                {
-                    cookieContainer.Add(new Uri(Config.SAFARI_BASE_URL), new Cookie(cookie.Key, cookie.Value));
-                    Console.WriteLine(cookie.Key);
-                }
+            foreach (var cookie in cookies)
+            {
+                cookieContainer.Add(new Uri(SafariBaseUrl), new Cookie(cookie.Key, cookie.Value));
+                Console.WriteLine(cookie.Key);
             }
         }
 
-        private bool UpdateCookies(HttpResponseMessage response)
+        private void UpdateCookies(HttpResponseMessage response)
         {
             var updatedCookies = false;
-            IEnumerable<string> cookies;
+            IEnumerable<string>? cookies;
             
             if (response.Headers.TryGetValues("Set-Cookie", out cookies))
             {
@@ -105,7 +97,7 @@ namespace SafariBooksDownload
                     var cookieKeyValue = cookieData.Split('=');
                     if (cookieKeyValue.Length == 2)
                     {
-                        cookieContainer.Add(new Uri(Config.SAFARI_BASE_URL), new Cookie(cookieKeyValue[0], cookieKeyValue[1]));
+                        cookieContainer.Add(new Uri(SafariBaseUrl), new Cookie(cookieKeyValue[0], cookieKeyValue[1]));
                         updatedCookies = true;
                     }
                     
@@ -113,16 +105,15 @@ namespace SafariBooksDownload
             }
             if (updatedCookies)
             {
-                SaveCookiesToFile(Config.COOKIES_FILE);
-                LoadCookiesFromFile(Config.COOKIES_FILE);
+                SaveCookiesToFile(cookiesFile);
+                LoadCookiesFromFile(cookiesFile);
             }
-            return updatedCookies;
         }
 
         private void SaveCookiesToFile(string filePath)
         {
             var cookies = new Dictionary<string, string>();
-            foreach (Cookie cookie in cookieContainer.GetCookies(new Uri(Config.SAFARI_BASE_URL)))
+            foreach (Cookie cookie in cookieContainer.GetCookies(new Uri(SafariBaseUrl)))
             {
                 cookies[cookie.Name] = cookie.Value;
             }

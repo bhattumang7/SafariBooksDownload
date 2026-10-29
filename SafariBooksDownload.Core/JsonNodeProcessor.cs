@@ -4,7 +4,7 @@
     {
         private int currentOrder = 0;
         private int maxDepth = 0;
-        private HashSet<string> distinctUrl = new HashSet<string>();
+        private readonly HashSet<string> distinctUrl = new HashSet<string>();
         public void AssignOrder(List<JsonNodeInfo> nodes)
         {
             foreach (var node in nodes)

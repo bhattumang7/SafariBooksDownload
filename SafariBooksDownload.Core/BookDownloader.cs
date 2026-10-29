@@ -38,7 +38,7 @@ namespace SafariBooksDownload
                 localEpubFolder = Path.Join(booksPath, book.product_id);
                 Directory.CreateDirectory(localEpubFolder);
                 var markerPath = Path.Combine(localEpubFolder, WorkFolders.Marker);
-                File.WriteAllText(markerPath, "");
+                await File.WriteAllTextAsync(markerPath, "");
 
                 _progress.ProgressBarValue = 0;
                 var opfPath = EpubManifest.GetOpfFileFullPath(book.fileList);
@@ -124,19 +124,19 @@ namespace SafariBooksDownload
         public async Task DownloadFilesAsync(Book book, List<ChappterInfo> chapters, string localEpubFolder)
         {
             _progress.DownloadLabel = book.title + " (downloading files)";
-            double lastPercentage = -1;
+            int lastPercentage = -1;
             var totalFileCount = book.fileList.Count;
             int currentFileNo = 1;
             foreach (var fileChunk in book.fileList.Chunk(DownloadBatchSize))
             {
-                double percentDone = ProgressMath.FilePercent(currentFileNo, totalFileCount);
+                int percentDone = ProgressMath.FilePercent(currentFileNo, totalFileCount);
                 if (lastPercentage != percentDone)
                 {
                     lastPercentage = percentDone;
                     int fileNo = currentFileNo;
                     _runOnUi(() =>
                     {
-                        _progress.ProgressBarValue = percentDone / 100;
+                        _progress.ProgressBarValue = percentDone / 100.0;
                         _progress.ProgressLabel =
                             $"Downloading files. {percentDone} percentage done. ({fileNo}/{totalFileCount}) ";
                     });

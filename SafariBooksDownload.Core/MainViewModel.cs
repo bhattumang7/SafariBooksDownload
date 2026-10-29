@@ -16,8 +16,8 @@ namespace SafariBooksDownload
 
         private bool _RetainFolder;
 
-        private string _lastFileDownloadPath;
-        private string _lastFileDownloadName;
+        private string _lastFileDownloadPath = "";
+        private string _lastFileDownloadName = "";
 
         public bool RetainFolder
         {
@@ -83,7 +83,7 @@ namespace SafariBooksDownload
             
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
         {

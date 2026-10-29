@@ -44,3 +44,40 @@ public class CssProcessorTests
         Assert.Contains("other/missing.png", output);
     }
 }
+
+public class CssProcessorEdgeCaseTests
+{
+    private static readonly BookFile[] Files = [Samples.File("OEBPS/styles/a.css", "text/css"), Samples.File("OEBPS/images/bg.png", "image/png")];
+
+    private static string Run(string css) => CssProcessor.Process(css, Files, Samples.Base + "OEBPS/styles/a.css");
+
+    [Fact]
+    public void NonStyleRules_AreKept()
+    {
+        var output = Run("@media print { .a { margin: 1px; } } .b { margin: 2px; }");
+
+        Assert.Contains("@media print", output);
+        Assert.Contains("margin: 2px", output);
+    }
+
+    [Fact]
+    public void UnquotedUrl_IsAlsoRewritten()
+    {
+        // AngleSharp re-serialises url(x) as url("x") before the rewrite runs.
+        var output = Run(".hero { background-image: url(images/bg.png); }");
+
+        Assert.Contains("../images/bg.png", output);
+    }
+
+    [Fact]
+    public void RuleWithoutUrlProperties_IsUntouched() =>
+        Assert.Contains("margin: 1px", Run(".m { margin: 1px; }"));
+
+    [Fact]
+    public void BackgroundWithUrlOnly_IsRewritten()
+    {
+        var output = Run(".hero { background: url(\"images/bg.png\"); }");
+
+        Assert.Contains("../images/bg.png", output);
+    }
+}

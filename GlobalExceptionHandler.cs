@@ -15,7 +15,7 @@ namespace SafariBooksDownload
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private void OnUnhandledException(object? sender, UnhandledExceptionEventArgs e)
         {
             var exception = e.ExceptionObject as Exception;
             _logger.LogError(exception, "Unhandled exception occurred");

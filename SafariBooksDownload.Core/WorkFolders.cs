@@ -10,13 +10,10 @@ namespace SafariBooksDownload
             if (!Directory.Exists(booksPath))
                 return;
 
-            foreach (var dir in Directory.EnumerateDirectories(booksPath))
+            foreach (var dir in Directory.EnumerateDirectories(booksPath).Where(d => File.Exists(Path.Combine(d, Marker))))
             {
-                if (File.Exists(Path.Combine(dir, Marker)))
-                {
-                    try { Directory.Delete(dir, recursive: true); }
-                    catch { /* best-effort cleanup */ }
-                }
+                try { Directory.Delete(dir, recursive: true); }
+                catch { /* best-effort cleanup */ }
             }
         }
     }

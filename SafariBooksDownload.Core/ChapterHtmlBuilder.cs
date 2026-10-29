@@ -43,7 +43,7 @@ namespace SafariBooksDownload
         /// </summary>
         public static string Build(Book book, BookFile file, ChappterInfo? chapter, string chapterHtml)
         {
-            var extraCssInfo = "";
+            var extraCssInfo = new System.Text.StringBuilder();
             if (chapter?.related_assets?.stylesheets is { Count: > 0 } stylesheets)
             {
                 var allStylesheets = stylesheets.Append(
@@ -52,7 +52,7 @@ namespace SafariBooksDownload
                 foreach (var styleSheetUrl in allStylesheets)
                 {
                     var path = UrlResolver.GetRelativePath(book.fileList, file.url, styleSheetUrl);
-                    extraCssInfo += $"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n";
+                    extraCssInfo.Append($"<link href=\"{path}\" rel=\"stylesheet\" type=\"text/css\" />\n");
                 }
             }
 

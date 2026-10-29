@@ -1,20 +1,33 @@
-using System.IO;
-
 namespace SafariBooksDownload
 {
-    internal class Config
+    internal static class Config
     {
         public const string WorkInProgressMarker = WorkFolders.Marker;
 
-        static Config()
+        public static readonly string BooksPath = ResolveBooksPath();
+
+        public static readonly string COOKIES_FILE = ResolveCookiesFile();
+
+        private static string ResolveBooksPath()
         {
 #if ANDROID
             var downloads = Android.OS.Environment.GetExternalStoragePublicDirectory("Download")!.AbsolutePath;
-            BooksPath = Path.Combine(downloads, "SafariBooks");
-            COOKIES_FILE = Path.Combine(FileSystem.Current.AppDataDirectory, "cookies.json");
+            return Path.Combine(downloads, "SafariBooks");
 #elif WINDOWS
-            BooksPath = @"C:\Umang\NewDownloader\";
-            COOKIES_FILE = Path.Combine(BooksPath, "cookies.json");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SafariBooks");
+#else
+            return "";
+#endif
+        }
+
+        private static string ResolveCookiesFile()
+        {
+#if ANDROID
+            return Path.Combine(FileSystem.Current.AppDataDirectory, "cookies.json");
+#elif WINDOWS
+            return Path.Combine(BooksPath, "cookies.json");
+#else
+            return "";
 #endif
         }
 
@@ -25,21 +38,5 @@ namespace SafariBooksDownload
         }
 
         public static void SweepOrphanWorkFolders() => WorkFolders.SweepOrphans(BooksPath);
-
-        private static string pATH = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!;
-        public static string COOKIES_FILE = "";
-        public static string ORLY_BASE_HOST = "oreilly.com";
-
-        public static string SAFARI_BASE_HOST = "learning." + ORLY_BASE_HOST;
-        public static string API_ORIGIN_HOST = "api." + ORLY_BASE_HOST;
-
-        public static string ORLY_BASE_URL = "https://www." + ORLY_BASE_HOST;
-        public static string SAFARI_BASE_URL = "https://" + SAFARI_BASE_HOST;
-        public static string API_ORIGIN_URL = "https://" + API_ORIGIN_HOST;
-        public static string PROFILE_URL = SAFARI_BASE_URL + "/profile/";
-
-        public static string PATH { get => pATH; set => pATH = value; }
-
-        public static string BooksPath = "";
     }
 }

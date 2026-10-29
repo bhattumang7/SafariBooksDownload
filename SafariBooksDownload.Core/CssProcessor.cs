@@ -6,8 +6,11 @@ using AngleSharp.Css.Parser;
 
 namespace SafariBooksDownload
 {
-    public static class CssProcessor
+    public static partial class CssProcessor
     {
+        [GeneratedRegex(@"url\(\""(.*?)\""\)", RegexOptions.None, matchTimeoutMilliseconds: 1000)]
+        private static partial Regex UrlRegex();
+
         // Properties that can contain URLs
         private static readonly string[] PropertiesWithUrls =
         [
@@ -66,7 +69,7 @@ namespace SafariBooksDownload
                         continue;
                     }
 
-                    var match = Regex.Match(propertyValue, @"url\(\""(.*?)\""\)");
+                    var match = UrlRegex().Match(propertyValue);
                     if (!match.Success)
                     {
                         continue;
