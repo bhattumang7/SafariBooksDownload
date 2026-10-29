@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Reject commit messages carrying AI-model attribution (see CLAUDE.md).
+msg_file="$1"
+ai='claude|anthropic|chatgpt|openai|gpt-?[0-9]|copilot|gemini|codex|cursor|aider|devin|llama|mistral|\bai\b|\bllm\b|noreply@anthropic\.com'
+
+body=$(grep -v '^#' "$msg_file")
+bad=$(printf '%s\n' "$body" | grep -iE "^[[:space:]]*co-authored-by:.*($ai)|(generated|created|written|authored)[[:space:]]+(with|by|using).*($ai)|🤖" || true)
+
+if [ -n "$bad" ]; then
+  echo "commit-msg: AI-model attribution is not allowed in commit messages:" >&2
+  printf '  %s\n' "$bad" >&2
+  echo "Remove those lines and commit again." >&2
+  exit 1
+fi
