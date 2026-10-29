@@ -4,7 +4,7 @@ namespace SafariBooksDownload
 {
     internal class Config
     {
-        public const string WorkInProgressMarker = ".in_progress";
+        public const string WorkInProgressMarker = WorkFolders.Marker;
 
         static Config()
         {
@@ -24,20 +24,7 @@ namespace SafariBooksDownload
                 Directory.CreateDirectory(BooksPath);
         }
 
-        public static void SweepOrphanWorkFolders()
-        {
-            if (!Directory.Exists(BooksPath))
-                return;
-
-            foreach (var dir in Directory.EnumerateDirectories(BooksPath))
-            {
-                if (File.Exists(Path.Combine(dir, WorkInProgressMarker)))
-                {
-                    try { Directory.Delete(dir, recursive: true); }
-                    catch { /* best-effort cleanup */ }
-                }
-            }
-        }
+        public static void SweepOrphanWorkFolders() => WorkFolders.SweepOrphans(BooksPath);
 
         private static string pATH = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!;
         public static string COOKIES_FILE = "";

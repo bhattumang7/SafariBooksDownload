@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Sonar scan script (contains a hardcoded local admin password)
+sonar-scan.ps1
+.sonarqube/
+TestResults/

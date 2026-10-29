@@ -70,9 +70,18 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	<!-- Core library and tests are separate projects; keep the default globs from compiling their sources into the app -->
 	<ItemGroup>
-		<PackageReference Include="AngleSharp.Css" Version="0.17.0" />
-		<PackageReference Include="HtmlAgilityPack" Version="1.11.65" />
+		<Compile Remove="SafariBooksDownload.Core\**" />
+		<Compile Remove="SafariBooksDownload.Tests\**" />
+		<EmbeddedResource Remove="SafariBooksDownload.Core\**" />
+		<EmbeddedResource Remove="SafariBooksDownload.Tests\**" />
+		<None Remove="SafariBooksDownload.Core\**" />
+		<None Remove="SafariBooksDownload.Tests\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="SafariBooksDownload.Core\SafariBooksDownload.Core.csproj" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />

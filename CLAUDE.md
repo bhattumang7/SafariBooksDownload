@@ -11,16 +11,32 @@ export JAVA_HOME=/usr/local/sdkman/candidates/java/21.0.10-ms
 export ANDROID_HOME=$HOME/android-sdk
 ```
 
+## Layout
+- `SafariBooksDownload.csproj` — MAUI app (UI + platform glue only: `MainPage`, `Config`, `PermissionHelper`, `OReillyClient`).
+- `SafariBooksDownload.Core/` — plain `net10.0` library with all testable logic (API parsing, CSS/HTML rewriting, EPUB packaging, `BookDownloader`). The app talks to the network through `IOReillyClient`.
+- `SafariBooksDownload.Tests/` — xUnit tests for Core. No Android workload needed.
+
+The app csproj excludes the two sub-project folders from its default globs; keep it that way.
+
 ## Debug build
+Name the project: a bare `dotnet build -f net10.0-android` picks up the solution and applies `-f` to the plain net10.0 projects too.
 ```bash
-dotnet build -f net10.0-android
+dotnet build SafariBooksDownload.csproj -f net10.0-android
 ```
+
+## Tests
+```bash
+dotnet test SafariBooksDownload.Tests
+```
+
+## SonarQube
+`./sonar-scan.ps1 [-WithCoverage]` (gitignored; project key `safaribooksdownload` on localhost:9010).
 
 ## Release APK (memory-constrained host)
 The 8 GB codespace OOM-kills ILLink when it runs once per RID in parallel. Override `RuntimeIdentifiers` (plural) AND `RuntimeIdentifier` to a single arch, force `-m:1`. Swap files don't work on the codespace overlayfs.
 
 ```bash
-dotnet publish -f net10.0-android -c Release \
+dotnet publish SafariBooksDownload.csproj -f net10.0-android -c Release \
   -p:RuntimeIdentifiers=android-arm64 -p:RuntimeIdentifier=android-arm64 \
   -p:AndroidPackageFormat=apk -m:1
 ```
