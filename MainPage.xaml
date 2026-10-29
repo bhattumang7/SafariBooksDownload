@@ -2,8 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:SafariBooksDownload"
+             xmlns:core="clr-namespace:SafariBooksDownload;assembly=SafariBooksDownload.Core"
              x:Class="SafariBooksDownload.MainPage"
-             x:DataType="local:MainViewModel">
+             x:DataType="core:MainViewModel">
 
     <ScrollView>
         <VerticalStackLayout
@@ -38,7 +39,7 @@
             <ListView x:Name="booksListView" ItemsSource="{Binding Books}">
                 <ListView.RowHeight>250</ListView.RowHeight>
                 <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="local:Book">
+                    <DataTemplate x:DataType="core:Book">
                         <ViewCell>
                             <StackLayout x:Name="itemLayout" Orientation="Horizontal" VerticalOptions="Fill" HorizontalOptions="Fill">
                                 <Image Source="{Binding cover_image}" HeightRequest="130" />
